@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	bvhDetail           = 8
+	bvhDetail           = 5
 	annealingIterations = 2000000
 )
 

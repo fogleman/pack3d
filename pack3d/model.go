@@ -93,7 +93,7 @@ func (m *Model) Reset() {
 
 func (m *Model) Pack(iterations int, callback AnnealCallback) *Model {
 	e := 0.5
-	return Anneal(m, 1e0*e, 1e-5*e, iterations, callback).(*Model)
+	return Anneal(m, 1e0*e, 1e-4*e, iterations, callback).(*Model)
 }
 
 func (m *Model) Meshes() []*fauxgl.Mesh {
@@ -169,7 +169,7 @@ func (m *Model) Energy() float64 {
 	return m.Volume() / m.MaxVolume
 }
 
-func (m *Model) DoMove() interface{} {
+func (m *Model) DoMove() Undo {
 	i := rand.Intn(len(m.Items))
 	item := m.Items[i]
 	undo := Undo{i, item.Rotation, item.Translation}
@@ -192,11 +192,10 @@ func (m *Model) DoMove() interface{} {
 	return undo
 }
 
-func (m *Model) UndoMove(undo interface{}) {
-	u := undo.(Undo)
-	item := m.Items[u.Index]
-	item.Rotation = u.Rotation
-	item.Translation = u.Translation
+func (m *Model) UndoMove(undo Undo) {
+	item := m.Items[undo.Index]
+	item.Rotation = undo.Rotation
+	item.Translation = undo.Translation
 }
 
 func (m *Model) Copy() Annealable {
