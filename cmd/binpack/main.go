@@ -46,7 +46,7 @@ func timed(name string) func() {
 
 func main() {
 	const S = 100
-	const P = 0.5
+	const P = 2.5
 
 	var items []binpack.Item
 	var meshes []*fauxgl.Mesh
