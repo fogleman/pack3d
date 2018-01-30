@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 	"math"
 	"os"
 	"strconv"
@@ -11,13 +13,39 @@ import (
 	"github.com/fogleman/pack3d/binpack"
 )
 
-const (
-	SizeX = 380
-	SizeY = 284
-	SizeZ = 380
-)
+// Config file format definition
+type Config struct {
+	SizeX int     `json:"SizeX"`
+	SizeY int     `json:"SizeY"`
+	SizeZ int     `json:"SizeZ"`
+	P     float64 `json:"HalfPartSpacing"`
+}
 
+//Rotations definition
 var Rotations []fauxgl.Matrix
+
+// LoadConfiguration file
+func LoadConfiguration() Config {
+	cwd, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var config Config
+	configFile, err := os.Open(cwd + "conf.json")
+	defer configFile.Close()
+	if err != nil {
+		// Use defaults when no config supplied
+		config.SizeX = 165
+		config.SizeY = 165
+		config.SizeZ = 320
+		config.P = 2.5
+		return config
+	}
+	jsonParser := json.NewDecoder(configFile)
+	err = jsonParser.Decode(&config)
+	return config
+}
 
 func init() {
 	for i := 0; i < 2; i++ {
@@ -45,8 +73,13 @@ func timed(name string) func() {
 }
 
 func main() {
+	config := LoadConfiguration()
+
+	var SizeX = config.SizeX
+	var SizeY = config.SizeY
+	var SizeZ = config.SizeZ
+	var P = config.P
 	const S = 100
-	const P = 2.5
 
 	var items []binpack.Item
 	var meshes []*fauxgl.Mesh
