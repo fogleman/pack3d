@@ -5,18 +5,20 @@ import (
 	"math"
 	"math/rand"
 	"time"
+
+	"github.com/fogleman/fauxgl"
 )
 
 type AnnealCallback func(Annealable)
 
 type Annealable interface {
 	Energy() float64
-	DoMove() Undo
+	DoMove([]fauxgl.Vector, fauxgl.Vector) Undo
 	UndoMove(Undo)
 	Copy() Annealable
 }
 
-func Anneal(state Annealable, maxTemp, minTemp float64, steps int, callback AnnealCallback) Annealable {
+func Anneal(state Annealable, maxTemp, minTemp float64, steps int, callback AnnealCallback, stlsize []fauxgl.Vector, boundsize fauxgl.Vector) Annealable {
 	start := time.Now()
 	factor := -math.Log(maxTemp / minTemp)
 	state = state.Copy()
@@ -30,10 +32,11 @@ func Anneal(state Annealable, maxTemp, minTemp float64, steps int, callback Anne
 	for step := 0; step < steps; step++ {
 		pct := float64(step) / float64(steps-1)
 		temp := maxTemp * math.Exp(factor*pct)
+		// every 200 steps show progress
 		if step%rate == 0 {
 			showProgress(step, steps, bestEnergy, time.Since(start).Seconds())
 		}
-		undo := state.DoMove()
+		undo := state.DoMove(stlsize, boundsize)
 		energy := state.Energy()
 		change := energy - previousEnergy
 		if change > 0 && math.Exp(-change/temp) < rand.Float64() {
@@ -54,6 +57,7 @@ func Anneal(state Annealable, maxTemp, minTemp float64, steps int, callback Anne
 	return bestState
 }
 
+/* This function shows progress, not necessary*/
 func showProgress(i, n int, e, d float64) {
 	pct := int(100 * float64(i) / float64(n))
 	fmt.Printf("  %3d%% [", pct)
