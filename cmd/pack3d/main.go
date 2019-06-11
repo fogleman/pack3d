@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/fogleman/fauxgl" //fauxgl is a go library
+	"github.com/fogleman/fauxgl"
 	"github.com/fogleman/pack3d/pack3d"
 )
 
@@ -30,21 +30,32 @@ func timed(name string) func() {
 }
 
 func main() {
-	var stlsize []fauxgl.Vector
-	//var boundsize fauxgl.Vector
-	var done func()
-
-	boundsize := fauxgl.V(50.0, 50.0, 50.0)
+	var (
+		singleStlSize []fauxgl.Vector
+	    done          func()
+	    totalVolume   float64
+		dimension     []float64
+		)
 
 	rand.Seed(time.Now().UTC().UnixNano())
 
 	model := pack3d.NewModel()
 	count := 1
 	ok := false
-	var totalVolume float64
+
+
+	/*Loading frame size*/
+	for _, j := range os.Args[1:4]{
+		_dimension, err := strconv.ParseInt(j, 0, 0)
+		if err == nil{
+			dimension = append(dimension, float64(_dimension))
+			continue
+		}
+	}
+	frameSize := fauxgl.V(dimension[0], dimension[1], dimension[2])
 
 	/* Loading stl models */
-	for _, arg := range os.Args[1:] {
+	for _, arg := range os.Args[4:] {
 		_count, err := strconv.ParseInt(arg, 0, 0)
 		if err == nil {
 			count = int(_count)
@@ -61,11 +72,9 @@ func main() {
 		totalVolume += mesh.BoundingBox().Volume()
 		size := mesh.BoundingBox().Size()
 		for i:=0; i<count; i++{
-			stlsize = append(stlsize, size)
+			singleStlSize = append(singleStlSize, size)
 		}
-		//fmt.Println(reflect.TypeOf(stlsize))
 
-		// fmt.Println(" My name is Minglun ")
 		fmt.Printf("  %d triangles\n", len(mesh.Triangles))
 		fmt.Printf("  %g x %g x %g\n", size.X, size.Y, size.Z)
 
@@ -88,7 +97,6 @@ func main() {
 		return
 	}
 
-	//fmt.Println(len(stlsize))
 	side := math.Pow(totalVolume, 1.0/3)
 	model.Deviation = side / 32  //change deviation to change distance between models, set a minimum here
 
@@ -96,7 +104,7 @@ func main() {
 	/* This loop is to find the best packing stl, thus it will generate mutiple output 
 Add 'break' in the loop to stop program */
 	for {
-		model = model.Pack(annealingIterations, nil, stlsize, boundsize)
+		model = model.Pack(annealingIterations, nil, singleStlSize, frameSize)
 		score := model.Energy()  // score < 1, the smaller the better
 		if score < best {
 			best = score

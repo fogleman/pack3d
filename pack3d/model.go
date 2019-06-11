@@ -95,9 +95,9 @@ func (m *Model) Reset() {
 	}
 }
 
-func (m *Model) Pack(iterations int, callback AnnealCallback, stlsize []fauxgl.Vector, boundsize fauxgl.Vector) *Model {
+func (m *Model) Pack(iterations int, callback AnnealCallback, singleStlSize []fauxgl.Vector, frameSize fauxgl.Vector) *Model {
 	e := 0.5
-	return Anneal(m, 1e0*e, 1e-4*e, iterations, callback, stlsize, boundsize).(*Model)
+	return Anneal(m, 1e0*e, 1e-4*e, iterations, callback, singleStlSize, frameSize).(*Model)
 }
 
 func (m *Model) Meshes() []*fauxgl.Mesh {
@@ -159,13 +159,13 @@ func (m *Model) ValidChange(i int) bool {
 	return true
 }
 
-func (m *Model) ValidBound(i int, stlsize []fauxgl.Vector, boundsize fauxgl.Vector) bool {
+func (m *Model) ValidBound(i int, singleStlSize []fauxgl.Vector, frameSize fauxgl.Vector) bool {
 	var points []fauxgl.Vector
 	var point fauxgl.Vector
 
 	item := m.Items[i]
 	rotation := Rotations[item.Rotation]
-	size := stlsize[i]
+	size := singleStlSize[i]
 
 	points = append(points,fauxgl.V(0.0, 0.0, 0.0))
 	points = append(points,fauxgl.V(size.X, 0.0, 0.0))
@@ -181,7 +181,7 @@ func (m *Model) ValidBound(i int, stlsize []fauxgl.Vector, boundsize fauxgl.Vect
 		point = rotation.MulPosition(point)
 		point = point.Add(item.Translation)
 		point = point.Abs()
-		if point.Max(boundsize) == boundsize{
+		if point.Max(frameSize) == frameSize {
 			//fmt.Println(point)
 			continue
 		} else {
@@ -210,7 +210,7 @@ func (m *Model) Energy() float64 {
 	return m.Volume() / m.MaxVolume
 }
 
-func (m *Model) DoMove(stlsize []fauxgl.Vector, boundsize fauxgl.Vector) Undo {
+func (m *Model) DoMove(singleStlSize []fauxgl.Vector, frameSize fauxgl.Vector) Undo {
 	i := rand.Intn(len(m.Items)) // choose a random index in models
 	//fmt.Println(len(m.Items))
 	item := m.Items[i]  // single model
@@ -231,7 +231,7 @@ func (m *Model) DoMove(stlsize []fauxgl.Vector, boundsize fauxgl.Vector) Undo {
 		}
 		//fmt.Println("yes")
 
-		if m.ValidChange(i) && m.ValidBound(i, stlsize, boundsize) {
+		if m.ValidChange(i) && m.ValidBound(i, singleStlSize, frameSize) {
 			break
 		}
 		item.Rotation = undo.Rotation
