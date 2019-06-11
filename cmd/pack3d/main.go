@@ -35,6 +35,7 @@ func main() {
 	    done          func()
 	    totalVolume   float64
 		dimension     []float64
+		ntime         int
 		)
 
 	rand.Seed(time.Now().UTC().UnixNano())
@@ -52,7 +53,7 @@ func main() {
 			continue
 		}
 	}
-	frameSize := fauxgl.V(dimension[0], dimension[1], dimension[2])
+	frameSize := fauxgl.V(dimension[0]/2, dimension[1]/2, dimension[2]/2)
 
 	/* Loading stl models */
 	for _, arg := range os.Args[4:] {
@@ -104,7 +105,11 @@ func main() {
 	/* This loop is to find the best packing stl, thus it will generate mutiple output 
 Add 'break' in the loop to stop program */
 	for {
-		model = model.Pack(annealingIterations, nil, singleStlSize, frameSize)
+		model, ntime = model.Pack(annealingIterations, nil, singleStlSize, frameSize)
+		if ntime >= 9990{
+			model.Reset()
+			continue
+		}
 		score := model.Energy()  // score < 1, the smaller the better
 		if score < best {
 			best = score

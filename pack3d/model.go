@@ -95,9 +95,11 @@ func (m *Model) Reset() {
 	}
 }
 
-func (m *Model) Pack(iterations int, callback AnnealCallback, singleStlSize []fauxgl.Vector, frameSize fauxgl.Vector) *Model {
+func (m *Model) Pack(iterations int, callback AnnealCallback, singleStlSize []fauxgl.Vector, frameSize fauxgl.Vector) (*Model, int) {
 	e := 0.5
-	return Anneal(m, 1e0*e, 1e-4*e, iterations, callback, singleStlSize, frameSize).(*Model)
+	runannel, ntime:= Anneal(m, 1e0*e, 1e-4*e, iterations, callback, singleStlSize, frameSize)
+	annealModel := runannel.(*Model)
+	return annealModel, ntime
 }
 
 func (m *Model) Meshes() []*fauxgl.Mesh {
@@ -182,10 +184,8 @@ func (m *Model) ValidBound(i int, singleStlSize []fauxgl.Vector, frameSize fauxg
 		point = point.Add(item.Translation)
 		point = point.Abs()
 		if point.Max(frameSize) == frameSize {
-			//fmt.Println(point)
 			continue
 		} else {
-			//fmt.Println(point)
 			return false
 		}
 	}
@@ -210,12 +210,13 @@ func (m *Model) Energy() float64 {
 	return m.Volume() / m.MaxVolume
 }
 
-func (m *Model) DoMove(singleStlSize []fauxgl.Vector, frameSize fauxgl.Vector) Undo {
+func (m *Model) DoMove(singleStlSize []fauxgl.Vector, frameSize fauxgl.Vector) (Undo, int) {
 	i := rand.Intn(len(m.Items)) // choose a random index in models
-	//fmt.Println(len(m.Items))
 	item := m.Items[i]  // single model
 	undo := Undo{i, item.Rotation, item.Translation}
+	j := 0
 	for {
+		j += 1
 		if rand.Intn(4) == 0 {
 			// rotate, 1/4 of probability
 			item.Rotation = rand.Intn(len(Rotations)) // do a random rotation, it's a random index
@@ -223,21 +224,22 @@ func (m *Model) DoMove(singleStlSize []fauxgl.Vector, frameSize fauxgl.Vector) U
 			// translate, 3/4 of probability
 			offset := Axis(rand.Intn(3) + 1).Vector()  // Pick a random axis
 			offset = offset.MulScalar(rand.NormFloat64() * m.Deviation)  // A random translation in x or y or z (vector)
-			//fmt.Println(item.Translation)
 			item.Translation = item.Translation.Add(offset)  // add offset to translation
-			//fmt.Println(offset)
-			//fmt.Println(item.Translation)
-			//fmt.Println("------")
 		}
-		//fmt.Println("yes")
+		//fmt.Println("226")
 
 		if m.ValidChange(i) && m.ValidBound(i, singleStlSize, frameSize) {
 			break
 		}
+
+
 		item.Rotation = undo.Rotation
 		item.Translation = undo.Translation
+	if j>=20000 {
+		break
 	}
-	return undo
+	}
+	return undo, j
 }
 
 func (m *Model) UndoMove(undo Undo) {
