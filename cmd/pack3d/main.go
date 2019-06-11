@@ -106,7 +106,7 @@ func main() {
 Add 'break' in the loop to stop program */
 	for {
 		model, ntime = model.Pack(annealingIterations, nil, singleStlSize, frameSize)
-		if ntime >= 9990{
+		if ntime >= 19990{
 			model.Reset()
 			continue
 		}

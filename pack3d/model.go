@@ -11,8 +11,9 @@ import (
 var Rotations []fauxgl.Matrix
 
 func init() { // do the for loop 24 times for all the rotation posibility
+	axisDirections := [2]int{-1, 1}
 	for i := 0; i < 4; i++ { // every axis 4 times to return to the original position
-		for s := -1; s <= 1; s += 2 {  // switch axis direction - or +
+		for _, s := range axisDirections{  // switch axis direction - or +
 			for a := 1; a <= 3; a++ { // switch axis (3 axis)
 				up := AxisZ.Vector() // z axis
 				//fmt.Println(up)
@@ -161,6 +162,8 @@ func (m *Model) ValidChange(i int) bool {
 	return true
 }
 
+
+/*True if the passed move it within maximum_packing_area, false in all other cases.*/
 func (m *Model) ValidBound(i int, singleStlSize []fauxgl.Vector, frameSize fauxgl.Vector) bool {
 	var points []fauxgl.Vector
 	var point fauxgl.Vector
@@ -226,7 +229,6 @@ func (m *Model) DoMove(singleStlSize []fauxgl.Vector, frameSize fauxgl.Vector) (
 			offset = offset.MulScalar(rand.NormFloat64() * m.Deviation)  // A random translation in x or y or z (vector)
 			item.Translation = item.Translation.Add(offset)  // add offset to translation
 		}
-		//fmt.Println("226")
 
 		if m.ValidChange(i) && m.ValidBound(i, singleStlSize, frameSize) {
 			break

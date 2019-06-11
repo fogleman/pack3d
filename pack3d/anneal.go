@@ -37,7 +37,7 @@ func Anneal(state Annealable, maxTemp, minTemp float64, steps int, callback Anne
 			showProgress(step, steps, bestEnergy, time.Since(start).Seconds())
 		}
 		undo, ntime := state.DoMove(singleStlSize, frameSize)
-		if ntime >= 9990{
+		if ntime >= 19990{
 			return bestState, ntime
 		}
 		energy := state.Energy()
