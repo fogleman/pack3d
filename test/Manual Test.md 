@@ -1,0 +1,36 @@
+##Manual Test Report
+
+Manual tests to run on the packing algorithm. 
+ 
+**Test 1**
+ <COMMAND TO RUN> ` pack3d {100,100,100} 6 Pika.stl
+` 
+Observation: Pikacu may go beyond maximum run packing size frame 
+Expected: All files packed withing 100,100,100 
+Results : Model may go beyond pack size in the X, Y or Z director. And the size out of the frame is about 10 percent of the frame size.
+
+**Test 2** 
+<COMMAND TO RUN> `pack3d {40,40,30} 6 lampshade.stl`
+
+Observation: Works well. The output STL is in the frame size. 
+Expected: The 6 STLs should be in a frame {25,25,25}.
+Results: if I input this frame({25,25,25}), no result can I get, which means the room usage is not that efficient.
+
+
+**Test 3**
+<COMMAND TO RUN> `pack3d {100,100,100} 7 corniere_machine.stl
+
+Obsevation: Works well for this part. If I change the number of STLs, the output will be in the frame if there it can give an output.
+
+**Test 4**
+<COMMAND TO RUN> `pack3d {100,100,100} 18 printABS.STL`
+
+Observation: Works well. will not exceed the frame.
+
+**SUMMARY**
+Strength: For most case this software will work well.
+Weakness: It may not be so efficient as for the room usage.
+Opportunity: We may use `binpack` for further improvement.
+Threat: For Pika it may exceed the frame. The reason maybe the boundingbox for Pika doesn't include the whole Pika model.  
+
+
