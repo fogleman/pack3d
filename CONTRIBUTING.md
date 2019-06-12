@@ -35,3 +35,8 @@ cd cmd/binpack
 go get
 go install
 ```
+
+Bin file is run using,
+```
+pack3d {100,100,100} 1 mesh1.stl 1 mesh2.stl
+```
