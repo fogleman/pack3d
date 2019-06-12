@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/fogleman/fauxgl"
-	"github.com/fogleman/pack3d/pack3d"
+	"pack3d/pack3d"
 )
 
 const (
