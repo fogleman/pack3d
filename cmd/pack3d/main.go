@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/fogleman/fauxgl"
-	"github.com/fogleman/pack3d/pack3d"
+	"pack3d/pack3d"
 )
 
 const (
@@ -18,7 +18,7 @@ const (
 )
 
 
-/* This function returns current time (it's a timer) */ 
+/* This function returns current time (it's a timer) */
 func timed(name string) func() {
 	if len(name) > 0 {
 		fmt.Printf("%s... ", name)
@@ -102,7 +102,7 @@ func main() {
 	model.Deviation = side / 32  //change deviation to change distance between models, set a minimum here
 
 	best := 1e9  //the best score
-	/* This loop is to find the best packing stl, thus it will generate mutiple output 
+	/* This loop is to find the best packing stl, thus it will generate mutiple output
 Add 'break' in the loop to stop program */
 	for {
 		model, ntime = model.Pack(annealingIterations, nil, singleStlSize, frameSize)
