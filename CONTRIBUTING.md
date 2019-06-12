@@ -9,6 +9,7 @@ First, install Go, set your GOPATH, and make sure $GOPATH/bin is on your PATH.
 brew install go
 export GOPATH="$HOME/go"
 export PATH="$PATH:$GOPATH/bin"
+export GOBIN=$GOPATH/bin
 ```
 
 Clone the repo Authentise/pack3d (IN YOUR GO/SRC DIRECTORY!)
