@@ -21,6 +21,17 @@ Then go to the project folder and do
 go get github.com/fogleman/fauxgl
 ```
 
+From source directory,
 ```
-go install cmd/pack3d/main.go
+cd cmd/pack3d
+go get
+go install
+```
+
+
+From source directory,
+```
+cd cmd/binpack
+go get
+go install
 ```
