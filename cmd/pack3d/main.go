@@ -1,12 +1,15 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"math"
 	"math/rand"
 	"os"
 	"strconv"
 	"time"
+	//"encoding/json"
 
 	"github.com/fogleman/fauxgl"
 	"pack3d/pack3d"
@@ -30,12 +33,20 @@ func timed(name string) func() {
 }
 
 func main() {
+
+	type Data struct {
+		Filename         string
+		Transformation   [4][4]float64
+	}
+
 	var (
 		singleStlSize []fauxgl.Vector
 	    done          func()
 	    totalVolume   float64
 		dimension     []float64
 		ntime         int
+		filenames     []string
+		data          []Data
 		)
 
 	rand.Seed(time.Now().UTC().UnixNano())
@@ -74,6 +85,7 @@ func main() {
 		size := mesh.BoundingBox().Size()
 		for i:=0; i<count; i++{
 			singleStlSize = append(singleStlSize, size)
+			filenames = append(filenames, arg)
 		}
 
 		fmt.Printf("  %d triangles\n", len(mesh.Triangles))
@@ -104,19 +116,41 @@ func main() {
 	best := 1e9  //the best score
 	/* This loop is to find the best packing stl, thus it will generate mutiple output
 Add 'break' in the loop to stop program */
+	start := time.Now()
 	for {
 		model, ntime = model.Pack(annealingIterations, nil, singleStlSize, frameSize)
 		if ntime >= 19990{
-			model.Reset()
-			continue
+			if time.Since(start).Seconds() <= 20{
+				model.Reset()
+				continue
+			}else{
+				fmt.Println("Cannot get a result, please decrease your numbers of STL")
+				break
+			}
+
 		}
 		score := model.Energy()  // score < 1, the smaller the better
 		if score < best {
 			best = score
 			done = timed("writing mesh")
-			model.Mesh().SaveSTL(fmt.Sprintf("pack3d-%.3f.stl", score))  // calling the mesh function in model
+			transformation := model.Transformation()
+			for j:=0; j<len(transformation); j++{
+				t := transformation[j]
+				transMatrix := [4][4]float64{{t.X00, t.X01, t.X02, t.X03},{t.X10, t.X11, t.X12, t.X13},{t.X20, t.X21, t.X22, t.X23},{t.X30, t.X31, t.X32, t.X33}}
+				content := Data{filenames[j], transMatrix}
+				data = append(data, content)
+			}
+			b, err := json.Marshal(data)
+			if err != nil {
+				fmt.Println("error:", err)
+			}
+			ioutil.WriteFile("output.json", b, 0644)
+			//os.Stdout.Write(b)
+
+			//model.Mesh().SaveSTL(fmt.Sprintf("pack3d-%.3f.stl", score))  // calling the mesh function in model
 			// model.TreeMesh().SaveSTL(fmt.Sprintf("out%dtree.stl", int(score*100000)))
 			done()
+			break
 		}
 		model.Reset()
 	}

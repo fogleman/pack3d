@@ -4,7 +4,6 @@ import (
 	"math"
 	"math/rand"
 
-
 	"github.com/fogleman/fauxgl"
 )
 
@@ -118,6 +117,14 @@ func (m *Model) Mesh() *fauxgl.Mesh {
 	result := fauxgl.NewEmptyMesh()
 	for _, mesh := range m.Meshes() {
 		result.Add(mesh)
+	}
+	return result
+}
+
+func (m *Model) Transformation() []fauxgl.Matrix {
+	result := make([]fauxgl.Matrix, len(m.Items))
+	for i, item := range m.Items {
+		result[i] = item.Matrix()
 	}
 	return result
 }
