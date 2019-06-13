@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"time"
+	//"encoding/json"
 
 	"github.com/fogleman/fauxgl"
 	"pack3d/pack3d"
@@ -104,11 +105,18 @@ func main() {
 	best := 1e9  //the best score
 	/* This loop is to find the best packing stl, thus it will generate mutiple output
 Add 'break' in the loop to stop program */
+	start := time.Now()
 	for {
 		model, ntime = model.Pack(annealingIterations, nil, singleStlSize, frameSize)
 		if ntime >= 19990{
-			model.Reset()
-			continue
+			if time.Since(start).Seconds() <= 20{
+				model.Reset()
+				continue
+			}else{
+				fmt.Println("Cannot get a result, please decrease your numbers of STL")
+				break
+			}
+
 		}
 		score := model.Energy()  // score < 1, the smaller the better
 		if score < best {
@@ -117,6 +125,7 @@ Add 'break' in the loop to stop program */
 			model.Mesh().SaveSTL(fmt.Sprintf("pack3d-%.3f.stl", score))  // calling the mesh function in model
 			// model.TreeMesh().SaveSTL(fmt.Sprintf("out%dtree.stl", int(score*100000)))
 			done()
+			break
 		}
 		model.Reset()
 	}
