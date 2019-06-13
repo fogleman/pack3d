@@ -9,7 +9,6 @@ import (
 	"os"
 	"strconv"
 	"time"
-	//"encoding/json"
 
 	"github.com/fogleman/fauxgl"
 	"pack3d/pack3d"
@@ -34,7 +33,7 @@ func timed(name string) func() {
 
 func main() {
 
-	type Data struct {
+	type TransMap struct {
 		Filename         string
 		Transformation   [4][4]float64
 	}
@@ -45,8 +44,8 @@ func main() {
 	    totalVolume   float64
 		dimension     []float64
 		ntime         int
-		filenames     []string
-		data          []Data
+		srcStlNames     []string
+		transMaps    []TransMap
 		)
 
 	rand.Seed(time.Now().UTC().UnixNano())
@@ -85,7 +84,7 @@ func main() {
 		size := mesh.BoundingBox().Size()
 		for i:=0; i<count; i++{
 			singleStlSize = append(singleStlSize, size)
-			filenames = append(filenames, arg)
+			srcStlNames = append(srcStlNames, arg)
 		}
 
 		fmt.Printf("  %d triangles\n", len(mesh.Triangles))
@@ -137,15 +136,15 @@ Add 'break' in the loop to stop program */
 			for j:=0; j<len(transformation); j++{
 				t := transformation[j]
 				transMatrix := [4][4]float64{{t.X00, t.X01, t.X02, t.X03},{t.X10, t.X11, t.X12, t.X13},{t.X20, t.X21, t.X22, t.X23},{t.X30, t.X31, t.X32, t.X33}}
-				content := Data{filenames[j], transMatrix}
-				data = append(data, content)
+				content := TransMap{srcStlNames[j], transMatrix}
+				transMaps = append(transMaps, content)
 			}
-			b, err := json.Marshal(data)
+			positions_json, err := json.Marshal(transMaps)
 			if err != nil {
 				fmt.Println("error:", err)
 			}
-			ioutil.WriteFile("output.json", b, 0644)
-			//os.Stdout.Write(b)
+			ioutil.WriteFile("output.json", positions_json, 0644)
+			//os.Stdout.Write(positions_json)
 
 			//model.Mesh().SaveSTL(fmt.Sprintf("pack3d-%.3f.stl", score))  // calling the mesh function in model
 			// model.TreeMesh().SaveSTL(fmt.Sprintf("out%dtree.stl", int(score*100000)))
