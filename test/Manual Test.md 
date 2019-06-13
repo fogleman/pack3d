@@ -1,6 +1,6 @@
 ##Manual Test Report
 
-Manual tests to run on the packing algorithm. 
+Manual tests to run on the nesting algorithm. 
  
 **Test 1**
  <COMMAND TO RUN> ` pack3d {100,100,100} 6 Pika.stl
