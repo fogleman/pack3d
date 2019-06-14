@@ -121,6 +121,7 @@ func (m *Model) Mesh() *fauxgl.Mesh {
 	return result
 }
 
+/* This function will return the tranformation matrices of all items */
 func (m *Model) Transformation() []fauxgl.Matrix {
 	result := make([]fauxgl.Matrix, len(m.Items))
 	for i, item := range m.Items {

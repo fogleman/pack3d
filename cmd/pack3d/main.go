@@ -118,12 +118,17 @@ Add 'break' in the loop to stop program */
 	start := time.Now()
 	for {
 		model, ntime = model.Pack(annealingIterations, nil, singleStlSize, frameSize)
+		/* ntime is the times of trial to find a output solution, if after trying for 19990 times
+		and no solution is found, then reset the model and try again. Usually if there is a solution,
+		ntime will be 1 or 2 for most cases. */
 		if ntime >= 19990{
+			/* There is a case that even I reset the model for many times, I still can't find a solution,
+			In this case, I need to set a threshold (20 second) to stop the software*/
 			if time.Since(start).Seconds() <= 20{
 				model.Reset()
 				continue
 			}else{
-				fmt.Println("Cannot get a result, please decrease your numbers of STL")
+				fmt.Println("Cannot get a result, please decrease your numbers of STLs or enlarge the frame sizes")
 				break
 			}
 
@@ -146,7 +151,7 @@ Add 'break' in the loop to stop program */
 			ioutil.WriteFile("output.json", positions_json, 0644)
 			//os.Stdout.Write(positions_json)
 
-			//model.Mesh().SaveSTL(fmt.Sprintf("pack3d-%.3f.stl", score))  // calling the mesh function in model
+			//model.Mesh().SaveSTL(fmt.Sprintf("pack3d-%.3f.stl", score))  // Add this line if want to generate the packing STL
 			// model.TreeMesh().SaveSTL(fmt.Sprintf("out%dtree.stl", int(score*100000)))
 			done()
 			break
