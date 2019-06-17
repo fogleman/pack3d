@@ -1,3 +1,7 @@
+/* Instruction: write down this into the command line to use the software
+<pack3d {your_frame_size_X,your_frame_size_Y,your_frame_size_Z} your_output_name STL_numbers STL_path STL_numbers STL_path .....>
+For example: <pack3d {100,100,100} Pikacu 1 /home/corner.stl 2 /home/Pika.stl>*/
+
 package main
 
 import (
@@ -66,7 +70,7 @@ func main() {
 	frameSize := fauxgl.V(dimension[0]/2, dimension[1]/2, dimension[2]/2)
 
 	/* Loading stl models */
-	for _, arg := range os.Args[4:] {
+	for _, arg := range os.Args[5:] {
 		_count, err := strconv.ParseInt(arg, 0, 0)
 		if err == nil {
 			count = int(_count)
@@ -148,7 +152,7 @@ Add 'break' in the loop to stop program */
 			if err != nil {
 				fmt.Println("error:", err)
 			}
-			ioutil.WriteFile("output.json", positions_json, 0644)
+			ioutil.WriteFile(fmt.Sprintf("%s.json", os.Args[4]), positions_json, 0644)
 			//os.Stdout.Write(positions_json)
 
 			//model.Mesh().SaveSTL(fmt.Sprintf("pack3d-%.3f.stl", score))  // Add this line if want to generate the packing STL
