@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/fogleman/fauxgl"
-	"github.com/fogleman/pack3d/binpack"
+	"pack3d/binpack"
 )
 
 const (
