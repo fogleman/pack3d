@@ -134,7 +134,7 @@ Add 'break' in the loop to stop program */
 				continue
 			}else{
 				fmt.Println("Cannot get a result, please decrease your numbers of STLs or enlarge the frame sizes")
-				break
+				os.Exit(508)
 			}
 
 		}
@@ -159,7 +159,7 @@ Add 'break' in the loop to stop program */
 			//model.Mesh().SaveSTL(fmt.Sprintf("pack3d-%.3f.stl", score))  // Add this line if want to generate the packing STL
 			// model.TreeMesh().SaveSTL(fmt.Sprintf("out%dtree.stl", int(score*100000)))
 			done()
-			break
+			os.Exit(201)
 		}
 		model.Reset()
 	}
