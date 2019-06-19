@@ -1,7 +1,13 @@
+/* Instruction: write down this into the command line to use the software
+<pack3d {your_frame_size_X,your_frame_size_Y,your_frame_size_Z} your_output_name STL_numbers STL_path STL_numbers STL_path .....>
+For example: <pack3d {100,100,100} Pikacu 1 /home/corner.stl 2 /home/Pika.stl>*/
+
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"math"
 	"math/rand"
 	"os"
@@ -31,12 +37,20 @@ func timed(name string) func() {
 }
 
 func main() {
+
+	type TransMap struct {
+		Filename         string
+		Transformation   [4][4]float64
+	}
+
 	var (
 		singleStlSize []fauxgl.Vector
 	    done          func()
 	    totalVolume   float64
 		dimension     []float64
 		ntime         int
+		srcStlNames     []string
+		transMaps    []TransMap
 		)
 
 	rand.Seed(time.Now().UTC().UnixNano())
@@ -57,7 +71,7 @@ func main() {
 	frameSize := fauxgl.V(dimension[0]/2, dimension[1]/2, dimension[2]/2)
 
 	/* Loading stl models */
-	for _, arg := range os.Args[4:] {
+	for _, arg := range os.Args[5:] {
 		_count, err := strconv.ParseInt(arg, 0, 0)
 		if err == nil {
 			count = int(_count)
@@ -75,6 +89,7 @@ func main() {
 		size := mesh.BoundingBox().Size()
 		for i:=0; i<count; i++{
 			singleStlSize = append(singleStlSize, size)
+			srcStlNames = append(srcStlNames, arg)
 		}
 
 		fmt.Printf("  %d triangles\n", len(mesh.Triangles))
@@ -108,12 +123,17 @@ Add 'break' in the loop to stop program */
 	start := time.Now()
 	for {
 		model, ntime = model.Pack(annealingIterations, nil, singleStlSize, frameSize)
+		/* ntime is the times of trial to find a output solution, if after trying for 19990 times
+		and no solution is found, then reset the model and try again. Usually if there is a solution,
+		ntime will be 1 or 2 for most cases. */
 		if ntime >= 19990{
+			/* There is a case that even I reset the model for many times, I still can't find a solution,
+			In this case, I need to set a threshold (20 second) to stop the software*/
 			if time.Since(start).Seconds() <= 20{
 				model.Reset()
 				continue
 			}else{
-				fmt.Println("Cannot get a result, please decrease your numbers of STL")
+				fmt.Println("Cannot get a result, please decrease your numbers of STLs or enlarge the frame sizes")
 				break
 			}
 
@@ -122,7 +142,21 @@ Add 'break' in the loop to stop program */
 		if score < best {
 			best = score
 			done = timed("writing mesh")
-			model.Mesh().SaveSTL(fmt.Sprintf("pack3d-%.3f.stl", score))  // calling the mesh function in model
+			transformation := model.Transformation()
+			for j:=0; j<len(transformation); j++{
+				t := transformation[j]
+				transMatrix := [4][4]float64{{t.X00, t.X01, t.X02, t.X03},{t.X10, t.X11, t.X12, t.X13},{t.X20, t.X21, t.X22, t.X23},{t.X30, t.X31, t.X32, t.X33}}
+				content := TransMap{srcStlNames[j], transMatrix}
+				transMaps = append(transMaps, content)
+			}
+			positions_json, err := json.Marshal(transMaps)
+			if err != nil {
+				fmt.Println("error:", err)
+			}
+			ioutil.WriteFile(fmt.Sprintf("%s.json", os.Args[4]), positions_json, 0644)
+			//os.Stdout.Write(positions_json)
+
+			//model.Mesh().SaveSTL(fmt.Sprintf("pack3d-%.3f.stl", score))  // Add this line if want to generate the packing STL
 			// model.TreeMesh().SaveSTL(fmt.Sprintf("out%dtree.stl", int(score*100000)))
 			done()
 			break
