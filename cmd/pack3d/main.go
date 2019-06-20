@@ -13,7 +13,6 @@ import (
 	"os"
 	"strconv"
 	"time"
-	//"encoding/json"
 
 	"github.com/fogleman/fauxgl"
 	"pack3d/pack3d"
