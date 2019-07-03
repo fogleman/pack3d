@@ -29,6 +29,7 @@ func Anneal(state Annealable, maxTemp, minTemp float64, steps int, callback Anne
 	bestEnergy := state.Energy()
 	previousEnergy := bestEnergy
 	rate := steps / 200
+	var cycleIndex int
 	for step := 0; step < steps; step++ {
 		pct := float64(step) / float64(steps-1)
 		temp := maxTemp * math.Exp(factor*pct)
@@ -37,6 +38,7 @@ func Anneal(state Annealable, maxTemp, minTemp float64, steps int, callback Anne
 			showProgress(step, steps, bestEnergy, time.Since(start).Seconds())
 		}
 		undo, ntime := state.DoMove(singleStlSize, frameSize)
+		cycleIndex = ntime
 		if ntime >= 19990{
 			return bestState, ntime
 		}
@@ -57,7 +59,7 @@ func Anneal(state Annealable, maxTemp, minTemp float64, steps int, callback Anne
 	}
 	showProgress(steps, steps, bestEnergy, time.Since(start).Seconds())
 	fmt.Println()
-	return bestState, 1
+	return bestState, cycleIndex
 }
 
 /* This function shows progress, not necessary*/

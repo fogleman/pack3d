@@ -4,14 +4,14 @@ import "github.com/fogleman/fauxgl"
 
 type Tree []fauxgl.Box
 
-func NewTreeForMesh(mesh *fauxgl.Mesh, depth int) Tree {
+func NewTreeForMesh(mesh *fauxgl.Mesh, depth int, space float64) Tree {
 	mesh = mesh.Copy()
 	mesh.Center()
 	boxes := make([]fauxgl.Box, len(mesh.Triangles))
 	for i, t := range mesh.Triangles {
 		boxes[i] = t.BoundingBox()
 	}
-	root := NewNode(boxes, depth)
+	root := NewNode(boxes, depth, space)
 	tree := make(Tree, 1<<uint(depth+1)-1)
 	root.Flatten(tree, 0)
 	return tree
@@ -69,10 +69,10 @@ type Node struct {
 	Right *Node
 }
 
-func NewNode(boxes []fauxgl.Box, depth int) *Node {
-	box := fauxgl.BoxForBoxes(boxes).Offset(2.5)
+func NewNode(boxes []fauxgl.Box, depth int, space float64) *Node {
+	box := fauxgl.BoxForBoxes(boxes).Offset(space) // change the offset to change the distance between objects
 	node := &Node{box, nil, nil}
-	node.Split(boxes, depth)
+	node.Split(boxes, depth, space)
 	return node
 }
 
@@ -86,7 +86,7 @@ func (a *Node) Flatten(tree Tree, i int) {
 	}
 }
 
-func (node *Node) Split(boxes []fauxgl.Box, depth int) {
+func (node *Node) Split(boxes []fauxgl.Box, depth int, space float64) {
 	if depth == 0 {
 		return
 	}
@@ -130,8 +130,8 @@ func (node *Node) Split(boxes []fauxgl.Box, depth int) {
 		return
 	}
 	l, r := partition(boxes, bestAxis, bestPoint, bestSide)
-	node.Left = NewNode(l, depth-1)
-	node.Right = NewNode(r, depth-1)
+	node.Left = NewNode(l, depth-1, space)
+	node.Right = NewNode(r, depth-1, space)
 }
 
 func partitionBox(box fauxgl.Box, axis Axis, point float64) (left, right bool) {
