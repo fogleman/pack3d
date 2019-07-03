@@ -1,6 +1,9 @@
-/* Instruction: write down this into the command line to use the software
+/*
+Instruction: write down this into the command line to use the software
 <pack3d {your_frame_size_X,your_frame_size_Y,your_frame_size_Z} spacing your_output_name STL_numbers STL_path STL_numbers STL_path .....>
-For example: <pack3d {100,100,100} 5 Pikacu 1 /home/corner.stl 2 /home/Pika.stl>*/
+For example: <pack3d {100,100,100} 5 Pikacu 1 /home/corner.stl 2 /home/Pika.stl>
+The unit of frame and spacing is millimeters.
+*/
 
 package main
 
