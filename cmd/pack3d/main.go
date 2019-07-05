@@ -67,7 +67,7 @@ func main() {
 
 	/*Loading frame size*/
 	for _, j := range os.Args[1:5]{
-		_dimension, err := strconv.ParseInt(j, 0, 0)
+		_dimension, err := strconv.ParseFloat(j, 64)
 		if err == nil{
 			dimension = append(dimension, float64(_dimension))
 			continue
