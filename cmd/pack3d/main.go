@@ -151,7 +151,7 @@ Add 'break' in the loop to stop program */
 				//ioutil.WriteFile(fmt.Sprintf("%s.json", os.Args[5]), err_json, 0644)
 				//break
 
-				os.Exit(508)
+				os.Exit(1)
 			}
 
 		}
@@ -178,7 +178,7 @@ Add 'break' in the loop to stop program */
 
 			// model.TreeMesh().SaveSTL(fmt.Sprintf("out%dtree.stl", int(score*100000)))
 			done()
-			os.Exit(201)
+			os.Exit(0)
 		}
 		model.Reset()
 	}
