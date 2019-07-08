@@ -4,14 +4,14 @@ import "github.com/fogleman/fauxgl"
 
 type Tree []fauxgl.Box
 
-func NewTreeForMesh(mesh *fauxgl.Mesh, depth int, space float64) Tree {
+func NewTreeForMesh(mesh *fauxgl.Mesh, depth int, spacing float64) Tree {
 	mesh = mesh.Copy()
 	mesh.Center()
 	boxes := make([]fauxgl.Box, len(mesh.Triangles))
 	for i, t := range mesh.Triangles {
 		boxes[i] = t.BoundingBox()
 	}
-	root := NewNode(boxes, depth, space)
+	root := NewNode(boxes, depth, spacing)
 	tree := make(Tree, 1<<uint(depth+1)-1)
 	root.Flatten(tree, 0)
 	return tree
