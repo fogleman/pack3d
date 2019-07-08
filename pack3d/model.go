@@ -9,13 +9,13 @@ import (
 
 var Rotations []fauxgl.Matrix
 
-func init() { // do the for loop 24 times for all the rotation posibility
+/*The loop runs 24 times for all the rotation possibility*/
+func init() {
 	axisDirections := [2]int{-1, 1}
 	for i := 0; i < 4; i++ { // every axis 4 times to return to the original position
 		for _, s := range axisDirections{  // switch axis direction - or +
 			for a := 1; a <= 3; a++ { // switch axis (3 axis)
 				up := AxisZ.Vector() // z axis
-				//fmt.Println(up)
 				m := fauxgl.Rotate(up, float64(i)*fauxgl.Radians(90)) // Rotation matrix in z axis (4 by 4 matrix)
 				//fmt.Println(Axis(a).Vector().MulScalar(float64(s))) is all axis
 				m = m.RotateTo(up, Axis(a).Vector().MulScalar(float64(s))) //rotation matrix in all axis(4 by 4)
@@ -33,7 +33,7 @@ type Undo struct {
 
 type Item struct {
 	Mesh        *fauxgl.Mesh
-	Trees       []Tree // what is Trees?
+	Trees       []Tree // struc tree -> []Box, struc Box -> {min, max} vector
 	Rotation    int
 	Translation fauxgl.Vector
 }
@@ -58,8 +58,8 @@ func NewModel() *Model {
 	return &Model{nil, 0, 0, 1}
 }
 
-func (m *Model) Add(mesh *fauxgl.Mesh, detail, count int) {
-	tree := NewTreeForMesh(mesh, detail)
+func (m *Model) Add(mesh *fauxgl.Mesh, detail, count int, space float64){
+	tree := NewTreeForMesh(mesh, detail, space)
 	trees := make([]Tree, len(Rotations))
 	for i, m := range Rotations {
 		trees[i] = tree.Transform(m)
@@ -71,16 +71,16 @@ func (m *Model) Add(mesh *fauxgl.Mesh, detail, count int) {
 
 func (m *Model) add(mesh *fauxgl.Mesh, trees []Tree) {
 	index := len(m.Items)
-	item := Item{mesh, trees, 0, fauxgl.Vector{}}
+	item := Item{mesh, trees, 0, fauxgl.Vector{}} // the translation is 0 for now
 	m.Items = append(m.Items, &item)
 	d := 1.0
 	for !m.ValidChange(index) {
 		item.Rotation = rand.Intn(len(Rotations))
+
 		item.Translation = fauxgl.RandomUnitVector().MulScalar(d)
 		d *= 1.2
 	}
 	tree := trees[0]
-	//fmt.Println(tree[0].Volume)
 	m.MinVolume = math.Max(m.MinVolume, tree[0].Volume())
 	m.MaxVolume += tree[0].Volume()  // what is tree[0]?
 }
@@ -103,7 +103,6 @@ func (m *Model) Pack(iterations int, callback AnnealCallback, singleStlSize []fa
 }
 
 func (m *Model) Meshes() []*fauxgl.Mesh {
-	//fmt.Println("yes I will")
 	result := make([]*fauxgl.Mesh, len(m.Items))
 	for i, item := range m.Items {
 		mesh := item.Mesh.Copy()
@@ -156,7 +155,6 @@ func (m *Model) TreeMesh() *fauxgl.Mesh {
 func (m *Model) ValidChange(i int) bool {
 	item1 := m.Items[i]
 	tree1 := item1.Trees[item1.Rotation]
-	//fmt.Println(item1.Translation)
 	for j := 0; j < len(m.Items); j++ {  // go through all other items
 		if j == i {
 			continue
