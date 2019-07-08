@@ -58,8 +58,9 @@ func NewModel() *Model {
 	return &Model{nil, 0, 0, 1}
 }
 
-func (m *Model) Add(mesh *fauxgl.Mesh, detail, count int, space float64){
-	tree := NewTreeForMesh(mesh, detail, space)
+func (m *Model) Add(mesh *fauxgl.Mesh, detail, count int, spacing float64){
+	//spacing is the min required distance between objects
+	tree := NewTreeForMesh(mesh, detail, spacing)
 	trees := make([]Tree, len(Rotations))
 	for i, m := range Rotations {
 		trees[i] = tree.Transform(m)

@@ -38,5 +38,10 @@ go install
 
 Bin file is run using,
 ```
-pack3d {100,100,100} 1 mesh1.stl 1 mesh2.stl
+pack3d {frame_x,frame_y,frame_z} mini_spacing output_file_name model_num model_file
+```
+
+For example,
+```
+pack3d {100,100,100} 5 output 1 mesh1.stl 1 mesh2.stl
 ```

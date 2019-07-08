@@ -65,7 +65,7 @@ func main() {
 	count := 1
 	ok := false
 
-	/*Loading frame size*/
+	/*Loading build_volume size*/
 	for _, j := range os.Args[1:5]{
 		_dimension, err := strconv.ParseFloat(j, 64)
 		if err == nil{
@@ -176,7 +176,7 @@ Add 'break' in the loop to stop program */
 			/*Add the following line if want to generate the packing STL*/
 			//model.Mesh().SaveSTL(fmt.Sprintf("pack3d-%s.stl", os.Args[5]))
 
-			// model.TreeMesh().SaveSTL(fmt.Sprintf("out%dtree.stl", int(score*100000)))
+			//model.TreeMesh().SaveSTL(fmt.Sprintf("out%dtree.stl", int(score*100000)))
 			done()
 			os.Exit(0)
 		}
