@@ -65,6 +65,8 @@ func main() {
 	count := 1
 	ok := false
 
+	fmt.Println(os.Args)
+
 	/*Loading build_volume size*/
 	for _, j := range os.Args[1:5]{
 		_dimension, err := strconv.ParseFloat(j, 64)
@@ -73,8 +75,9 @@ func main() {
 			continue
 		}
 	}
-	frameSize := fauxgl.V(dimension[0]/2, dimension[1]/2, dimension[2]/2)
 	spacing := dimension[3]/2.0
+	frameSize := fauxgl.V(dimension[0]/2.0, dimension[1]/2.0, dimension[2]/2.0)
+	fmt.Println(frameSize)
 
 	/* Loading stl models */
 	for _, arg := range os.Args[6:] {
@@ -132,7 +135,7 @@ Add 'break' in the loop to stop program */
 		/* ntime is the times of trial to find a output solution, if after trying for 19990 times
 		and no solution is found, then reset the model and try again. Usually if there is a solution,
 		ntime will be 1 or 2 for most cases. */
-		if ntime >= 19990{
+		if ntime >= 100{
 			/* There is a case that even I reset the model for many times, I still can't find a solution,
 			In this case, I need to set a threshold (20 second) to stop the software*/
 			if time.Since(start).Seconds() <= 20{
@@ -156,7 +159,7 @@ Add 'break' in the loop to stop program */
 
 		}
 		score := model.Energy()  // score < 1, the smaller the better
-		if score < best {
+		if score < best{
 			best = score
 			done = timed("writing mesh")
 			transformation := model.Transformation()
@@ -179,7 +182,10 @@ Add 'break' in the loop to stop program */
 			//model.TreeMesh().SaveSTL(fmt.Sprintf("out%dtree.stl", int(score*100000)))
 			done()
 			os.Exit(0)
+
 		}
+
 		model.Reset()
 	}
+
 }
