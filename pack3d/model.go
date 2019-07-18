@@ -190,8 +190,6 @@ func (m *Model) ValidBound(i int, singleStlSize []fauxgl.Vector, frameSize fauxg
 	for j:=0; j<8; j++{
 		point = points[j]
 		point = transformation.MulPosition(point)
-		//point = rotation.MulPosition(point)
-		//point = point.Add(item.Translation)
 		point = point.Abs()
 		if point.Max(frameSize) == frameSize {
 			continue
