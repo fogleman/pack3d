@@ -178,6 +178,7 @@ func (m *Model) ValidBound(i int, singleStlSize []fauxgl.Vector, frameSize fauxg
 	transformation := m.Transformation()[i]
 	size := singleStlSize[i]
 
+	// Rotate around the center of volume while checking if rotation is valid. (do not rotate around origin)
 	points = append(points,fauxgl.V(size.X/2, size.Y/2, size.Z/2))
 	points = append(points,fauxgl.V(size.X/2, -size.Y/2, size.Z/2))
 	points = append(points,fauxgl.V(size.X/2, -size.Y/2, -size.Z/2))
