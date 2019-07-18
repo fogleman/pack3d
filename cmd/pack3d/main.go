@@ -65,8 +65,6 @@ func main() {
 	count := 1
 	ok := false
 
-	fmt.Println(os.Args)
-
 	/*Loading build_volume size*/
 	for _, j := range os.Args[1:5]{
 		_dimension, err := strconv.ParseFloat(j, 64)
