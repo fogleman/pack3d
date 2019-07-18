@@ -175,23 +175,22 @@ func (m *Model) ValidBound(i int, singleStlSize []fauxgl.Vector, frameSize fauxg
 	var points []fauxgl.Vector
 	var point fauxgl.Vector
 
-	item := m.Items[i]
-	rotation := Rotations[item.Rotation]
+	transformation := m.Transformation()[i]
 	size := singleStlSize[i]
 
-	points = append(points,fauxgl.V(0.0, 0.0, 0.0))
-	points = append(points,fauxgl.V(size.X, 0.0, 0.0))
-	points = append(points,fauxgl.V(0.0, size.Y, 0.0))
-	points = append(points,fauxgl.V(0.0, 0.0, size.Z))
-	points = append(points,fauxgl.V(size.X, size.Y, 0.0))
-	points = append(points,fauxgl.V(size.X, 0.0, size.Z))
-	points = append(points,fauxgl.V(0.0, size.Y, size.Z))
-	points = append(points,size)
+	// Rotate around the center of volume while checking if rotation is valid. (do not rotate around origin)
+	points = append(points,fauxgl.V(size.X/2, size.Y/2, size.Z/2))
+	points = append(points,fauxgl.V(size.X/2, -size.Y/2, size.Z/2))
+	points = append(points,fauxgl.V(size.X/2, -size.Y/2, -size.Z/2))
+	points = append(points,fauxgl.V(size.X/2, size.Y/2, -size.Z/2))
+	points = append(points,fauxgl.V(-size.X/2, size.Y/2, size.Z/2))
+	points = append(points,fauxgl.V(-size.X/2, size.Y/2, -size.Z/2))
+	points = append(points,fauxgl.V(-size.X/2, -size.Y/2, size.Z/2))
+	points = append(points,fauxgl.V(-size.X/2, -size.Y/2, -size.Z/2))
 
 	for j:=0; j<8; j++{
 		point = points[j]
-		point = rotation.MulPosition(point)
-		point = point.Add(item.Translation)
+		point = transformation.MulPosition(point)
 		point = point.Abs()
 		if point.Max(frameSize) == frameSize {
 			continue
@@ -199,6 +198,7 @@ func (m *Model) ValidBound(i int, singleStlSize []fauxgl.Vector, frameSize fauxg
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -241,13 +241,14 @@ func (m *Model) DoMove(singleStlSize []fauxgl.Vector, frameSize fauxgl.Vector) (
 			break
 		}
 
-
 		item.Rotation = undo.Rotation
 		item.Translation = undo.Translation
-	if j>=20000 {
-		break
+		if j>=100 {
+			break
+		}
 	}
-	}
+
+
 	return undo, j
 }
 
