@@ -130,7 +130,7 @@ Add 'break' in the loop to stop program */
 	start := time.Now()
 	for {
 		model, ntime = model.Pack(annealingIterations, nil, singleStlSize, frameSize)
-		/* ntime is the times of trial to find a output solution, if after trying for 19990 times
+		/* ntime is the times of trial to find a output solution, if after trying for 100 times
 		and no solution is found, then reset the model and try again. Usually if there is a solution,
 		ntime will be 1 or 2 for most cases. */
 		if ntime >= 100{
