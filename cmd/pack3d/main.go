@@ -130,7 +130,7 @@ func main() {
 	/* This loop is to find the best packing stl, thus it will generate mutiple output
 Add 'break' in the loop to stop program */
 	start := time.Now()
-	packItemNum := count
+	packItemNum := len(model.Items)
 	var timeLimit float64
 	fillVolumeWithSpacing := 0.0
 	totalFillVolume := 0.0
@@ -175,7 +175,7 @@ Add 'break' in the loop to stop program */
 			var (transMatrix [4][4]float64
 				fillPercentage float64)
 			transformation := model.Transformation()
-			for j:=0; j<count; j++{
+			for j:=0; j<len(model.Items); j++{
 				t := transformation[j]
 				fillVolumeWithSpacing = (singleStlSize[j].X + spacing) * (singleStlSize[j].Y + spacing) * (singleStlSize[j].Z + spacing)
 				if j<packItemNum {
