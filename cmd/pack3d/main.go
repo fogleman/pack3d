@@ -154,6 +154,8 @@ Add 'break' in the loop to stop program */
 				model.Transformation()[packItemNum] = null
 				timeLimit += 20
 				continue
+
+				/*Do the following lines if want to return a json file including the error content*/
 				//err_content := err_msg{"Cannot get a result, please decrease your numbers of STLs or enlarge the frame sizes"}
 				//fmt.Println(err_content.Error)
 				//err_json, err := json.Marshal(err_content)
@@ -161,12 +163,8 @@ Add 'break' in the loop to stop program */
 				//if err != nil{
 				//fmt.Println("error:", err)
 				//}
-
-				/*Do the following lines if want to return a json file including the error content*/
 				//ioutil.WriteFile(fmt.Sprintf("%s.json", os.Args[5]), err_json, 0644)
 				//break
-
-				//os.Exit(1)
 			}
 
 		}
@@ -199,11 +197,10 @@ Add 'break' in the loop to stop program */
 			//os.Stdout.Write(positions_json)
 
 			/*Add the following line if want to generate the packing STL*/
-			model.Mesh().SaveSTL(fmt.Sprintf("pack3d-%s.stl", os.Args[5]))
+			//model.Mesh().SaveSTL(fmt.Sprintf("pack3d-%s.stl", os.Args[5]))
 
 			//model.TreeMesh().SaveSTL(fmt.Sprintf("out%dtree.stl", int(score*100000)))
 			done()
-			//os.Exit(0)
 			break
 
 		}
