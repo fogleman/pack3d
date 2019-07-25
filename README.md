@@ -1,6 +1,5 @@
 # pack3d
 
-Tightly pack 3D models.
 
 ### Installation
 
@@ -10,34 +9,39 @@ First, install Go, set your GOPATH, and make sure $GOPATH/bin is on your PATH.
 brew install go
 export GOPATH="$HOME/go"
 export PATH="$PATH:$GOPATH/bin"
+export GOBIN=$GOPATH/bin
 ```
 
-Next, fetch and build the two binaries.
+Clone the repo Authentise/pack3d (IN YOUR GO/SRC DIRECTORY!)
+
+Then go to the project folder and do
+
 
 ```
-go get github.com/fogleman/pack3d/cmd/pack3d
-go get github.com/fogleman/pack3d/cmd/binpack
+go get github.com/fogleman/fauxgl
 ```
 
-### Usage Examples
-
-Note that pack3d runs until stopped, writing its output to disk whenever a new best is found.
-
+From source directory,
 ```
-pack3d 2 3DBenchy.stl  # tightly pack 2 boats
-pack3d 4 3DBenchy.stl  # tightly pack 4 boats
-pack3d 1 *.stl         # tightly pack various meshes, one of each
-
-# pack as many boats as possible into the printer volume, given a few different arrangements
-binpack 1 3DBenchy.stl 2 3DBenchy-x2.stl 4 3DBenchy-x4.stl
+cd cmd/pack3d
+go get
+go install
 ```
 
-### Examples
 
-113 3DBenchy tug boats packed tightly
+From source directory,
+```
+cd cmd/binpack
+go get
+go install
+```
 
-![3DBenchy](http://i.imgur.com/adjchjy.png)
+Bin file is run using,
+```
+pack3d {frame_x,frame_y,frame_z} mini_spacing output_file_name model_num model_file
+```
 
-27 R2-D2 droids, 8 parts each
-
-![R2-D2](http://i.imgur.com/qE90ijK.png)
+For example,
+```
+pack3d {100,100,100} 5 output 1 mesh1.stl 1 mesh2.stl
+```
