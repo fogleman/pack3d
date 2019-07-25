@@ -96,9 +96,9 @@ func (m *Model) Reset() {
 	}
 }
 
-func (m *Model) Pack(iterations int, callback AnnealCallback, singleStlSize []fauxgl.Vector, frameSize fauxgl.Vector) (*Model, int) {
+func (m *Model) Pack(iterations int, callback AnnealCallback, singleStlSize []fauxgl.Vector, frameSize fauxgl.Vector, packItemNum int) (*Model, int) {
 	e := 0.5
-	runannel, ntime:= Anneal(m, 1e0*e, 1e-4*e, iterations, callback, singleStlSize, frameSize)
+	runannel, ntime:= Anneal(m, 1e0*e, 1e-4*e, iterations, callback, singleStlSize, frameSize, packItemNum)
 	annealModel := runannel.(*Model)
 	return annealModel, ntime
 }
@@ -220,8 +220,8 @@ func (m *Model) Energy() float64 {
 	return m.Volume() / m.MaxVolume
 }
 
-func (m *Model) DoMove(singleStlSize []fauxgl.Vector, frameSize fauxgl.Vector) (Undo, int) {
-	i := rand.Intn(len(m.Items)) // choose a random index in models
+func (m *Model) DoMove(singleStlSize []fauxgl.Vector, frameSize fauxgl.Vector, packItemNum int) (Undo, int) {
+	i := rand.Intn(packItemNum) // choose a random index in models
 	item := m.Items[i]  // single model
 	undo := Undo{i, item.Rotation, item.Translation}
 	j := 0

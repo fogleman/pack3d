@@ -43,6 +43,7 @@ func main() {
 	type TransMap struct {
 		Filename         string
 		Transformation   [4][4]float64
+		VolumeWithSpacing   float64
 	}
 
 	type err_msg struct {
@@ -75,6 +76,7 @@ func main() {
 	}
 	spacing := dimension[3]/2.0
 	frameSize := fauxgl.V(dimension[0]/2.0, dimension[1]/2.0, dimension[2]/2.0)
+	buildVolume := dimension[0] * dimension[1] * dimension[2]
 	fmt.Println(frameSize)
 
 	/* Loading stl models */
@@ -128,31 +130,41 @@ func main() {
 	/* This loop is to find the best packing stl, thus it will generate mutiple output
 Add 'break' in the loop to stop program */
 	start := time.Now()
+	packItemNum := count
+	var timeLimit float64
+	fillVolumeWithSpacing := 0.0
+	totalFillVolume := 0.0
+	null := fauxgl.Matrix{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0}
+	timeLimit = 20
 	for {
-		model, ntime = model.Pack(annealingIterations, nil, singleStlSize, frameSize)
+		model, ntime = model.Pack(annealingIterations, nil, singleStlSize, frameSize, packItemNum)
 		/* ntime is the times of trial to find a output solution, if after trying for 100 times
 		and no solution is found, then reset the model and try again. Usually if there is a solution,
 		ntime will be 1 or 2 for most cases. */
 		if ntime >= 100{
 			/* There is a case that even I reset the model for many times, I still can't find a solution,
 			In this case, I need to set a threshold (20 second) to stop the software*/
-			if time.Since(start).Seconds() <= 20{
+			if time.Since(start).Seconds() <= timeLimit{
 				model.Reset()
 				continue
 			}else{
-				err_content := err_msg{"Cannot get a result, please decrease your numbers of STLs or enlarge the frame sizes"}
-				fmt.Println(err_content.Error)
-				//err_json, err := json.Marshal(err_content)
-				_, err := json.Marshal(err_content)
-				if err != nil{
-					fmt.Println("error:", err)
-				}
+				packItemNum -= 1
+				model.Reset()
+				fmt.Println("decrease by 1")
+				model.Transformation()[packItemNum] = null
+				timeLimit += 20
+				continue
 
 				/*Do the following lines if want to return a json file including the error content*/
+				//err_content := err_msg{"Cannot get a result, please decrease your numbers of STLs or enlarge the frame sizes"}
+				//fmt.Println(err_content.Error)
+				//err_json, err := json.Marshal(err_content)
+				//_, err := json.Marshal(err_content)
+				//if err != nil{
+				//fmt.Println("error:", err)
+				//}
 				//ioutil.WriteFile(fmt.Sprintf("%s.json", os.Args[5]), err_json, 0644)
 				//break
-
-				os.Exit(1)
 			}
 
 		}
@@ -160,17 +172,27 @@ Add 'break' in the loop to stop program */
 		if score < best{
 			best = score
 			done = timed("writing mesh")
+			var (transMatrix [4][4]float64
+				fillPercentage float64)
 			transformation := model.Transformation()
-			for j:=0; j<len(transformation); j++{
+			for j:=0; j<count; j++{
 				t := transformation[j]
-				transMatrix := [4][4]float64{{t.X00, t.X01, t.X02, t.X03},{t.X10, t.X11, t.X12, t.X13},{t.X20, t.X21, t.X22, t.X23},{t.X30, t.X31, t.X32, t.X33}}
-				content := TransMap{srcStlNames[j], transMatrix}
+				fillVolumeWithSpacing = (singleStlSize[j].X + spacing) * (singleStlSize[j].Y + spacing) * (singleStlSize[j].Z + spacing)
+				if j<packItemNum {
+					totalFillVolume += fillVolumeWithSpacing
+					transMatrix = [4][4]float64{{t.X00, t.X01, t.X02, t.X03}, {t.X10, t.X11, t.X12, t.X13}, {t.X20, t.X21, t.X22, t.X23}, {t.X30, t.X31, t.X32, t.X33}}
+				}else{
+					transMatrix = [4][4]float64{{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
+				}
+				fillPercentage = totalFillVolume/buildVolume
+				content := TransMap{srcStlNames[j], transMatrix, fillVolumeWithSpacing}
 				transMaps = append(transMaps, content)
 			}
 			positions_json, err := json.Marshal(transMaps)
 			if err != nil {
 				fmt.Println("error:", err)
 			}
+			fmt.Println("the fill percentage is:", fillPercentage)
 			ioutil.WriteFile(fmt.Sprintf("%s.json", os.Args[5]), positions_json, 0644)
 			//os.Stdout.Write(positions_json)
 
@@ -179,7 +201,7 @@ Add 'break' in the loop to stop program */
 
 			//model.TreeMesh().SaveSTL(fmt.Sprintf("out%dtree.stl", int(score*100000)))
 			done()
-			os.Exit(0)
+			break
 
 		}
 

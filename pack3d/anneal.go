@@ -13,12 +13,12 @@ type AnnealCallback func(Annealable)
 
 type Annealable interface {
 	Energy() float64
-	DoMove([]fauxgl.Vector, fauxgl.Vector) (Undo, int)
+	DoMove([]fauxgl.Vector, fauxgl.Vector, int) (Undo, int)
 	UndoMove(Undo)
 	Copy() Annealable
 }
 
-func Anneal(state Annealable, maxTemp, minTemp float64, steps int, callback AnnealCallback, singleStlSize []fauxgl.Vector, frameSize fauxgl.Vector) (Annealable, int) {
+func Anneal(state Annealable, maxTemp, minTemp float64, steps int, callback AnnealCallback, singleStlSize []fauxgl.Vector, frameSize fauxgl.Vector, packItemNum int) (Annealable, int) {
 	start := time.Now()
 	factor := -math.Log(maxTemp / minTemp)
 	state = state.Copy()
@@ -37,7 +37,7 @@ func Anneal(state Annealable, maxTemp, minTemp float64, steps int, callback Anne
 		if step%rate == 0 {
 			showProgress(step, steps, bestEnergy, time.Since(start).Seconds())
 		}
-		undo, ntime := state.DoMove(singleStlSize, frameSize)
+		undo, ntime := state.DoMove(singleStlSize, frameSize, packItemNum)
 		cycleIndex = ntime
 		if ntime >= 100{
 			return bestState, ntime
