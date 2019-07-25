@@ -221,7 +221,7 @@ func (m *Model) Energy() float64 {
 }
 
 func (m *Model) DoMove(singleStlSize []fauxgl.Vector, frameSize fauxgl.Vector, packItemNum int) (Undo, int) {
-	i := rand.Intn(packItemNum) //(len(m.Items)) // choose a random index in models
+	i := rand.Intn(packItemNum) // choose a random index in models
 	item := m.Items[i]  // single model
 	undo := Undo{i, item.Rotation, item.Translation}
 	j := 0
