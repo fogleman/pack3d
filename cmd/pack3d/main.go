@@ -179,15 +179,15 @@ Add 'break' in the loop to stop program */
 			transformation := model.Transformation()
 			for j:=0; j<count; j++{
 				t := transformation[j]
+				fillVolumeWithSpacing = (singleStlSize[j].X + spacing) * (singleStlSize[j].Y + spacing) * (singleStlSize[j].Z + spacing)
 				if j<packItemNum {
-					fillVolumeWithSpacing = (singleStlSize[j].X + spacing) * (singleStlSize[j].Y + spacing) * (singleStlSize[j].Z + spacing)
 					totalFillVolume += fillVolumeWithSpacing
 					transMatrix = [4][4]float64{{t.X00, t.X01, t.X02, t.X03}, {t.X10, t.X11, t.X12, t.X13}, {t.X20, t.X21, t.X22, t.X23}, {t.X30, t.X31, t.X32, t.X33}}
 				}else{
 					transMatrix = [4][4]float64{{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
 				}
 				fillPercentage = totalFillVolume/buildVolume
-				content := TransMap{srcStlNames[j], transMatrix, fillPercentage}
+				content := TransMap{srcStlNames[j], transMatrix, fillVolumeWithSpacing}
 				transMaps = append(transMaps, content)
 			}
 			positions_json, err := json.Marshal(transMaps)
