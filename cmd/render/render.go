@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	. "github.com/fogleman/fauxgl"
+	. "github.com/GerdW/fauxgl"
 	"github.com/nfnt/resize"
 )
 
