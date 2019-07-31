@@ -4,7 +4,7 @@ import (
 	"math"
 	"math/rand"
 
-	"github.com/fogleman/fauxgl"
+	"github.com/GerdW/fauxgl"
 )
 
 var Rotations []fauxgl.Matrix
