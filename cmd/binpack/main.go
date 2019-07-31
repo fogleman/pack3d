@@ -7,14 +7,14 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/fogleman/fauxgl"
-	"github.com/fogleman/pack3d/binpack"
+	"github.com/GerdW/fauxgl"
+	"github.com/GerdW/pack3d/binpack"
 )
 
 const (
-	SizeX = 165
-	SizeY = 165
-	SizeZ = 320
+	SizeX = 90
+	SizeY = 130
+	SizeZ = 230
 )
 
 var Rotations []fauxgl.Matrix
