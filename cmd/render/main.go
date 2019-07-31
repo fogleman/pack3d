@@ -5,7 +5,7 @@ import (
 	"time"
 
 	. "github.com/GerdW/fauxgl"
-	"github.com/GerdW/resize"
+	"github.com/nfnt/resize"
 )
 
 const (
