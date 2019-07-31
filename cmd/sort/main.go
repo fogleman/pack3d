@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strconv"
 
-	. "github.com/fogleman/fauxgl"
+	. "github.com/GerdW/fauxgl"
 )
 
 func main() {
