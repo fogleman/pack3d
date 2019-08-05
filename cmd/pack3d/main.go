@@ -135,7 +135,7 @@ Add 'break' in the loop to stop program */
 	fillVolumeWithSpacing := 0.0
 	totalFillVolume := 0.0
 	null := fauxgl.Matrix{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0}
-	timeLimit = 20
+	timeLimit = 10
 	for {
 		model, ntime = model.Pack(annealingIterations, nil, singleStlSize, frameSize, packItemNum)
 		/* ntime is the times of trial to find a output solution, if after trying for 100 times
@@ -152,7 +152,7 @@ Add 'break' in the loop to stop program */
 				model.Reset()
 				fmt.Println("decrease by 1")
 				model.Transformation()[packItemNum] = null
-				timeLimit += 20
+				timeLimit += 10
 				continue
 
 				/*Do the following lines if want to return a json file including the error content*/
