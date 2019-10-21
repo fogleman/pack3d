@@ -17,7 +17,8 @@ func main() {
 		}
 		box := mesh.BoundingBox()
 		size := box.Size()
-		volume := size.X * size.Y * size.Z
+		volume := mesh.Volume()
+		aabbVolume := size.X * size.Y * size.Z
 		center := box.Anchor(V(0.5, 0.5, 0.5))
 		fmt.Printf("  triangles = %d\n", len(mesh.Triangles))
 		fmt.Printf("  x range   = %g to %g\n", box.Min.X, box.Max.X)
@@ -26,6 +27,7 @@ func main() {
 		fmt.Printf("  center    = %g, %g, %g\n", center.X, center.Y, center.Z)
 		fmt.Printf("  size      = %g x %g x %g\n", size.X, size.Y, size.Z)
 		fmt.Printf("  volume    = %g\n", volume)
+		fmt.Printf("  aabb vol  = %g\n", aabbVolume)
 		fmt.Println()
 	}
 }
