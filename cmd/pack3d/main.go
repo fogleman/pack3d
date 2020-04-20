@@ -18,7 +18,8 @@ import (
 	"time"
 
 	"github.com/fogleman/fauxgl"
-	"pack3d/pack3d"
+
+	"github.com/Authentise/pack3d/pack3d"
 )
 
 const (
@@ -66,7 +67,7 @@ func main() {
 	count := 1
 	ok := false
 
-	/*Loading build_volume size*/
+	// Loading build_volume size
 	for _, j := range os.Args[1:5]{
 		_dimension, err := strconv.ParseFloat(j, 64)
 		if err == nil{
@@ -75,6 +76,7 @@ func main() {
 		}
 	}
 	spacing := dimension[3]/2.0
+	// frameSize is the vertex in the first quadrant
 	frameSize := fauxgl.V(dimension[0]/2.0, dimension[1]/2.0, dimension[2]/2.0)
 	buildVolume := dimension[0] * dimension[1] * dimension[2]
 	fmt.Println(frameSize)
@@ -128,14 +130,18 @@ func main() {
 
 	best := 1e9  //the best score
 	/* This loop is to find the best packing stl, thus it will generate mutiple output
-Add 'break' in the loop to stop program */
+		Add 'break' in the loop to stop program */
 	start := time.Now()
-	packItemNum := len(model.Items)
+	maxItemNum := len(model.Items)
 	var timeLimit float64
 	fillVolumeWithSpacing := 0.0
 	totalFillVolume := 0.0
 	null := fauxgl.Matrix{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0}
 	timeLimit = 10
+
+	minItemNum := 0
+	packItemNum := maxItemNum
+
 	for {
 		model, ntime = model.Pack(annealingIterations, nil, singleStlSize, frameSize, packItemNum)
 		/* ntime is the times of trial to find a output solution, if after trying for 100 times
@@ -148,61 +154,82 @@ Add 'break' in the loop to stop program */
 				model.Reset()
 				continue
 			}else{
-				packItemNum -= 1
+				// Linear search
+				//packItemNum -= 1
+
+				// Binary search
+				fmt.Println("No")
+				fmt.Println("packing#, max#, min# is: ", packItemNum, maxItemNum, minItemNum)
+				fmt.Println("------------------------")
+				maxItemNum = packItemNum - 1
+				packItemNum = int(math.Ceil(float64((maxItemNum + minItemNum) / 2)))
+
 				model.Reset()
-				fmt.Println("decrease by 1")
 				model.Transformation()[packItemNum] = null
-				timeLimit += 10
+				start = time.Now()
 				continue
 
-				/*Do the following lines if want to return a json file including the error content*/
-				//err_content := err_msg{"Cannot get a result, please decrease your numbers of STLs or enlarge the frame sizes"}
-				//fmt.Println(err_content.Error)
-				//err_json, err := json.Marshal(err_content)
-				//_, err := json.Marshal(err_content)
-				//if err != nil{
-				//fmt.Println("error:", err)
-				//}
-				//ioutil.WriteFile(fmt.Sprintf("%s.json", os.Args[5]), err_json, 0644)
-				//break
-			}
-
-		}
-		score := model.Energy()  // score < 1, the smaller the better
-		if score < best{
-			best = score
-			done = timed("writing mesh")
-			var (transMatrix [4][4]float64
-				fillPercentage float64)
-			transformation := model.Transformation()
-			for j:=0; j<len(model.Items); j++{
-				t := transformation[j]
-				fillVolumeWithSpacing = (singleStlSize[j].X + spacing) * (singleStlSize[j].Y + spacing) * (singleStlSize[j].Z + spacing)
-				if j<packItemNum {
-					totalFillVolume += fillVolumeWithSpacing
-					transMatrix = [4][4]float64{{t.X00, t.X01, t.X02, t.X03}, {t.X10, t.X11, t.X12, t.X13}, {t.X20, t.X21, t.X22, t.X23}, {t.X30, t.X31, t.X32, t.X33}}
-				}else{
-					transMatrix = [4][4]float64{{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
-				}
-				fillPercentage = totalFillVolume/buildVolume
-				content := TransMap{srcStlNames[j], transMatrix, fillVolumeWithSpacing}
-				transMaps = append(transMaps, content)
-			}
-			positions_json, err := json.Marshal(transMaps)
-			if err != nil {
+				//TODO: Unblock the following lines if want to return a json file including the error content
+				/*
+				err_content := err_msg{"Cannot get a result, please decrease your numbers of STLs or enlarge the frame sizes"}
+				fmt.Println(err_content.Error)
+				err_json, err := json.Marshal(err_content)
+				_, err := json.Marshal(err_content)
+				if err != nil{
 				fmt.Println("error:", err)
+				}
+				ioutil.WriteFile(fmt.Sprintf("%s.json", os.Args[5]), err_json, 0644)
+				break
+				*/
 			}
-			fmt.Println("the fill percentage is:", fillPercentage)
-			ioutil.WriteFile(fmt.Sprintf("%s.json", os.Args[5]), positions_json, 0644)
-			//os.Stdout.Write(positions_json)
+		}
 
-			/*Add the following line if want to generate the packing STL*/
-			//model.Mesh().SaveSTL(fmt.Sprintf("pack3d-%s.stl", os.Args[5]))
+		// Binary search
+		fmt.Println("Yes")
+		fmt.Println("packing#, max#, min# is: ", packItemNum, maxItemNum, minItemNum)
+		fmt.Println("------------------------")
+		minItemNum = packItemNum + 1
+		packItemNum = int(math.Ceil(float64((maxItemNum + minItemNum) / 2)))
+		start = time.Now()
 
-			//model.TreeMesh().SaveSTL(fmt.Sprintf("out%dtree.stl", int(score*100000)))
-			done()
-			break
+		if minItemNum > maxItemNum{
+			score := model.Energy()  // score < 1, the smaller the better
+			if score < best{
+				best = score
+				done = timed("writing mesh")
+				var (transMatrix [4][4]float64
+					fillPercentage float64)
+				transformation := model.Transformation()
+				for j:=0; j<len(model.Items); j++{
+					t := transformation[j]
+					fillVolumeWithSpacing = (singleStlSize[j].X + spacing) * (singleStlSize[j].Y + spacing) * (singleStlSize[j].Z + spacing)
+					if j<packItemNum {
+						totalFillVolume += fillVolumeWithSpacing
+						transMatrix = [4][4]float64{{t.X00, t.X01, t.X02, t.X03}, {t.X10, t.X11, t.X12, t.X13}, {t.X20, t.X21, t.X22, t.X23}, {t.X30, t.X31, t.X32, t.X33}}
+					}else{
+						transMatrix = [4][4]float64{{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
+					}
+					// It's actually the bounding box filling percentage
+					fillPercentage = totalFillVolume/buildVolume
+					content := TransMap{srcStlNames[j], transMatrix, fillVolumeWithSpacing}
+					transMaps = append(transMaps, content)
+				}
+				positions_json, err := json.Marshal(transMaps)
+				if err != nil {
+					fmt.Println("error:", err)
+				}
+				fmt.Println("the fill percentage is:", fillPercentage)
+				ioutil.WriteFile(fmt.Sprintf("%s.json", os.Args[5]), positions_json, 0644)
+				//os.Stdout.Write(positions_json)
 
+				//TODO: Unblock the following line if want to generate the packing STL
+				/*
+					model.Mesh().SaveSTL(fmt.Sprintf("pack3d-%s.stl", os.Args[5]))
+					model.TreeMesh().SaveSTL(fmt.Sprintf("out%dtree.stl", int(score*100000)))
+				*/
+				done()
+				break
+			}
 		}
 
 		model.Reset()
