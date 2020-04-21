@@ -79,7 +79,7 @@ func main() {
 	// frameSize is the vertex in the first quadrant
 	frameSize := fauxgl.V(dimension[0]/2.0, dimension[1]/2.0, dimension[2]/2.0)
 	buildVolume := dimension[0] * dimension[1] * dimension[2]
-	fmt.Println(frameSize)
+	//fmt.Println(frameSize)
 
 	/* Loading stl models */
 	for _, arg := range os.Args[6:] {
@@ -158,15 +158,16 @@ func main() {
 				//packItemNum -= 1
 
 				// Binary search
-				fmt.Println("No")
+				fmt.Println("Failed")
 				fmt.Println("packing#, max#, min# is: ", packItemNum, maxItemNum, minItemNum)
-				fmt.Println("------------------------")
+				fmt.Println("-----------------------------------")
 				maxItemNum = packItemNum - 1
 				packItemNum = int(math.Ceil(float64((maxItemNum + minItemNum) / 2)))
 
 				model.Reset()
 				model.Transformation()[packItemNum] = null
 				start = time.Now()
+
 				continue
 
 				//TODO: Unblock the following lines if want to return a json file including the error content
@@ -185,15 +186,16 @@ func main() {
 		}
 
 		// Binary search
-		fmt.Println("Yes")
+		fmt.Println("Succeeded")
 		fmt.Println("packing#, max#, min# is: ", packItemNum, maxItemNum, minItemNum)
-		fmt.Println("------------------------")
+		fmt.Println("-----------------------------------------")
 		minItemNum = packItemNum + 1
 		packItemNum = int(math.Ceil(float64((maxItemNum + minItemNum) / 2)))
 		start = time.Now()
 
 		if minItemNum > maxItemNum{
-			score := model.Energy()  // score < 1, the smaller the better
+			// score < 1, the smaller the better
+			score := model.Energy()
 			if score < best{
 				best = score
 				done = timed("writing mesh")
