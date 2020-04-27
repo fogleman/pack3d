@@ -41,6 +41,11 @@ func timed(name string) func() {
 
 func main() {
 
+	if os.Args[1] == "--version" {
+		fmt.Println("Pack3d 1.5.0")
+		return
+	}
+
 	type TransMap struct {
 		Filename         string
 		Transformation   [4][4]float64
