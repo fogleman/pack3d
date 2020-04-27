@@ -128,7 +128,6 @@ func main() {
 	side := math.Pow(totalVolume, 1.0/3)
 	model.Deviation = side / 32  //it is not the distance between objects. And it seems that it will not reflect the distance.
 
-	best := 1e9  //the best score
 	/* This loop is to find the best packing stl, thus it will generate mutiple output
 		Add 'break' in the loop to stop program */
 	start := time.Now()
@@ -141,6 +140,7 @@ func main() {
 
 	minItemNum := 0
 	packItemNum := maxItemNum
+	success_model := pack3d.NewModel()
 
 	for {
 		model, ntime = model.Pack(annealingIterations, nil, singleStlSize, frameSize, packItemNum)
@@ -168,6 +168,10 @@ func main() {
 				model.Transformation()[packItemNum] = null
 				start = time.Now()
 
+				if minItemNum > maxItemNum{
+					break
+				}
+
 				continue
 
 				//TODO: Unblock the following lines if want to return a json file including the error content
@@ -191,50 +195,45 @@ func main() {
 		fmt.Println("-----------------------------------------")
 		minItemNum = packItemNum + 1
 		packItemNum = int(math.Ceil(float64((maxItemNum + minItemNum) / 2)))
+		success_model = model
 		start = time.Now()
 
 		if minItemNum > maxItemNum{
-			// score < 1, the smaller the better
-			score := model.Energy()
-			if score < best{
-				best = score
-				done = timed("writing mesh")
-				var (transMatrix [4][4]float64
-					fillPercentage float64)
-				transformation := model.Transformation()
-				for j:=0; j<len(model.Items); j++{
-					t := transformation[j]
-					fillVolumeWithSpacing = (singleStlSize[j].X + spacing) * (singleStlSize[j].Y + spacing) * (singleStlSize[j].Z + spacing)
-					if j<packItemNum {
-						totalFillVolume += fillVolumeWithSpacing
-						transMatrix = [4][4]float64{{t.X00, t.X01, t.X02, t.X03}, {t.X10, t.X11, t.X12, t.X13}, {t.X20, t.X21, t.X22, t.X23}, {t.X30, t.X31, t.X32, t.X33}}
-					}else{
-						transMatrix = [4][4]float64{{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
-					}
-					// It's actually the bounding box filling percentage
-					fillPercentage = totalFillVolume/buildVolume
-					content := TransMap{srcStlNames[j], transMatrix, fillVolumeWithSpacing}
-					transMaps = append(transMaps, content)
-				}
-				positions_json, err := json.Marshal(transMaps)
-				if err != nil {
-					fmt.Println("error:", err)
-				}
-				fmt.Println("the fill percentage is:", fillPercentage)
-				ioutil.WriteFile(fmt.Sprintf("%s.json", os.Args[5]), positions_json, 0644)
-				//os.Stdout.Write(positions_json)
-
-				//TODO: Unblock the following line if want to generate the packing STL
-				/*
-					model.Mesh().SaveSTL(fmt.Sprintf("pack3d-%s.stl", os.Args[5]))
-					model.TreeMesh().SaveSTL(fmt.Sprintf("out%dtree.stl", int(score*100000)))
-				*/
-				done()
-				break
-			}
+			break
 		}
-
 		model.Reset()
 	}
 
+	done = timed("writing mesh")
+	var (transMatrix [4][4]float64
+		fillPercentage float64)
+	transformation := success_model.Transformation()
+	for j:=0; j<len(success_model.Items); j++{
+		t := transformation[j]
+		fillVolumeWithSpacing = (singleStlSize[j].X + spacing) * (singleStlSize[j].Y + spacing) * (singleStlSize[j].Z + spacing)
+		if j<packItemNum {
+			totalFillVolume += fillVolumeWithSpacing
+			transMatrix = [4][4]float64{{t.X00, t.X01, t.X02, t.X03}, {t.X10, t.X11, t.X12, t.X13}, {t.X20, t.X21, t.X22, t.X23}, {t.X30, t.X31, t.X32, t.X33}}
+		}else{
+			transMatrix = [4][4]float64{{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
+		}
+		// It's actually the bounding box filling percentage
+		fillPercentage = totalFillVolume/buildVolume
+		content := TransMap{srcStlNames[j], transMatrix, fillVolumeWithSpacing}
+		transMaps = append(transMaps, content)
+	}
+	positions_json, err := json.Marshal(transMaps)
+	if err != nil {
+		fmt.Println("error:", err)
+	}
+	fmt.Println("the fill percentage is:", fillPercentage)
+	ioutil.WriteFile(fmt.Sprintf("%s.json", os.Args[5]), positions_json, 0644)
+	//os.Stdout.Write(positions_json)
+
+	//TODO: Unblock the following line if want to generate the packing STL
+	/*
+		model.Mesh().SaveSTL(fmt.Sprintf("pack3d-%s.stl", os.Args[5]))
+		model.TreeMesh().SaveSTL(fmt.Sprintf("out%dtree.stl", int(score*100000)))
+	*/
+	done()
 }
