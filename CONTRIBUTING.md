@@ -1,9 +1,75 @@
-# Pack3d
+# pack3d - Installation, Codebase and Development
 
 
-Pack3d is the geometry packing tool for 3d printing used by Authentise and can be found [here](https://github.com/Authentise/pack3d). Authentise's Pack3d codebase was forked from Fogleman's pack3d. This codebase is deemed to be stable - it did not have major upgrades for several months. The codebase is also quite easy to read.
+## 1. Installation (macOS users)
 
-Pack3d is written in golang and the installation instructions can be found in the ```Authentise/pack3d/README.md```
+First, install Go, set your GOPATH, and make sure $GOPATH/bin is on your PATH.
+
+```
+brew install go
+
+mkdir ~/go
+export GOPATH="$HOME/go"
+export PATH="$PATH:$GOPATH/bin"
+export GOBIN=$GOPATH/bin
+```
+
+Then go to the src folder and do:
+
+```
+go get github.com/fogleman/fauxgl
+```
+
+Clone the repo Authentise/pack3d in your ```go/src``` folder.
+
+From source directory,
+```
+cd cmd/pack3d
+go get
+go install
+```
+
+From source directory,
+```
+cd cmd/binpack
+go get
+go install
+```
+
+Bin file is run using, where frame_x, frame_y, frame_z are the build_crate size.
+```
+pack3d {frame_x,frame_y,frame_z} mini_spacing output_file_name model_num model_file
+```
+
+For example,
+```
+pack3d {100,100,100} 5 output 1 mesh1.stl 1 mesh2.stl
+```
+
+After running `pack3d`, it will generate a json file. The format of the json file is:
+
+```
+{"Filename":  , "Transformation":  , "VolumeWithSpacing":  }
+```
+
+For example:
+
+```
+[
+   {
+      "Filename": "Box.stl",
+      "Transformation": [
+          [ -1,           0, -1.224e-16, -17.991 ],
+          [  0,           1,  0,         -19.997 ],
+          [  1.224e-16,   0, -1,          22.451 ],
+          [  0,           0,  0,          1      ]
+     ],
+     "VolumeWithSpacing": 16015.625
+   }
+]
+```
+
+## 2. Codebase
 
 What follows below is a quick peek into a few important files:
 
@@ -24,7 +90,7 @@ The ```func main()``` performs command line's arguments parsing and related acti
 - creation of STL pack3d model file - requires uncommenting some code. ```model.Mesh().SaveSTL( ... )```
 ```model.TreeMesh().SaveSTL( ... )```
 
-The output.json file contains a list of dictionaries - just one item in this case:
+The output.json file contains a list of dictionaries - just one item was added (to the 3dpack-model) in this case:
 
 ```
 [
@@ -59,3 +125,8 @@ The model class owns methods some of which have already been highlighted above, 
 |Volume()|get Volume |
 |Copy()| Copy |
 |...|...|
+
+
+## 3. Development
+
+__WARNING__: After pushing code to a branch of Authentise/pack3d, be careful that creating the pull request in Authentise/pack3d might actually open a pull request across forks and in the original fogleman/pack3d.
