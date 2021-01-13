@@ -7,19 +7,20 @@ First, install Go, set your GOPATH, and make sure $GOPATH/bin is on your PATH.
 
 ```
 brew install go
+
+mkdir ~/go
 export GOPATH="$HOME/go"
 export PATH="$PATH:$GOPATH/bin"
 export GOBIN=$GOPATH/bin
 ```
 
-Clone the repo Authentise/pack3d (IN YOUR GO/SRC DIRECTORY!)
-
-Then go to the project folder and do
-
+Then go to the src folder and do:
 
 ```
 go get github.com/fogleman/fauxgl
 ```
+
+Clone the repo Authentise/pack3d in your ```go/src``` folder.
 
 From source directory,
 ```
@@ -28,7 +29,6 @@ go get
 go install
 ```
 
-
 From source directory,
 ```
 cd cmd/binpack
@@ -36,7 +36,7 @@ go get
 go install
 ```
 
-Bin file is run using,
+Bin file is run using, where frame_x, frame_y, frame_z are the build_crate size.
 ```
 pack3d {frame_x,frame_y,frame_z} mini_spacing output_file_name model_num model_file
 ```
