@@ -1,59 +1,32 @@
 # pack3d
 
+Pack3d is the geometry packing tool for 3d printing used by Authentise and can be found [here](https://github.com/Authentise/pack3d). Authentise's Pack3d codebase was forked from Fogleman's pack3d.
 
-### Installation
+As it is now (mid January 2021), the Authentise/pack3d codebase is deemed to be stable - it did not have major upgrades for several months.
 
-First, install Go, set your GOPATH, and make sure $GOPATH/bin is on your PATH.
-
-```
-brew install go
-export GOPATH="$HOME/go"
-export PATH="$PATH:$GOPATH/bin"
-export GOBIN=$GOPATH/bin
-```
-
-Clone the repo Authentise/pack3d (IN YOUR GO/SRC DIRECTORY!)
-
-Then go to the project folder and do
+Pack3d is written in golang and the installation instructions can be found in the CONTRIBUTING.md
 
 
-```
-go get github.com/fogleman/fauxgl
-```
+### Example
 
-From source directory,
-```
-cd cmd/pack3d
-go get
-go install
-```
-
-
-From source directory,
-```
-cd cmd/binpack
-go get
-go install
-```
-
-Bin file is run using,
-```
-pack3d {frame_x,frame_y,frame_z} mini_spacing output_file_name model_num model_file
-```
-
-For example,
 ```
 pack3d {100,100,100} 5 output 1 mesh1.stl 1 mesh2.stl
 ```
 
-After running `pack3d`, it will generate a json file. The format of the json file is:
+Output example:
 
 ```
-{"Filename":  , "Transformation":  , "VolumeWithSpacing":  }
+[
+   {
+      "Filename": "Box.stl",
+      "Transformation": [
+          [ -1,           0,  -1.224e-16, -17.991 ],
+          [  0,           1,   0,         -19.997 ],
+          [  1.224e-16,   0,  -1,          22.451 ],
+          [  0,           0,   0,          1      ]
+     ],
+     "VolumeWithSpacing": 16015.625
+   }
+]
 ```
 
-For example:
-
-```
-[{"Filename":"Box.stl","Transformation":[[-1,0,-1.2246467991473515e-16,-17.991808688673732],[0,1,0,-19.997626237452177],[1.2246467991473515e-16,0,-1,22.451572094004227],[0,0,0,1]],"VolumeWithSpacing":16015.625}]
-```
