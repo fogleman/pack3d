@@ -69,6 +69,8 @@ For example:
 ]
 ```
 
+NB: Nautilus can only use a binary file built on a linux machine.
+
 ## 2. Codebase
 
 What follows below is a quick peek into a few important files:
@@ -129,4 +131,4 @@ The model class owns methods some of which have already been highlighted above, 
 
 ## 3. Development
 
-__WARNING__: After pushing code to a branch of Authentise/pack3d, be careful that creating the pull request in Authentise/pack3d might actually open a pull request across forks and in the original fogleman/pack3d.
+__WARNING__: After creating a PR, you can select which master (fogleman/master or Authentise/master) you want to merge into.
