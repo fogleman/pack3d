@@ -15,8 +15,8 @@ export PATH="$PATH:$GOPATH/bin"
 Next, fetch and build the two binaries.
 
 ```
-go get github.com/fogleman/pack3d/cmd/pack3d
-go get github.com/fogleman/pack3d/cmd/binpack
+go get github.com/GerdW/pack3d/cmd/pack3d
+go get github.com/GerdW/pack3d/cmd/binpack
 ```
 
 ### Usage Examples

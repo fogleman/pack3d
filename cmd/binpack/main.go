@@ -7,14 +7,14 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/fogleman/fauxgl"
-	"github.com/fogleman/pack3d/binpack"
+	"github.com/GerdW/fauxgl"
+	"github.com/GerdW/pack3d/binpack"
 )
 
 const (
-	SizeX = 165
-	SizeY = 165
-	SizeZ = 320
+	SizeX = 90
+	SizeY = 125
+	SizeZ = 225
 )
 
 var Rotations []fauxgl.Matrix
@@ -46,7 +46,7 @@ func timed(name string) func() {
 
 func main() {
 	const S = 100
-	const P = 2.5
+	const P = 0.75
 
 	var items []binpack.Item
 	var meshes []*fauxgl.Mesh

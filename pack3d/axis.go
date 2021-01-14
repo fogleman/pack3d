@@ -1,6 +1,6 @@
 package pack3d
 
-import "github.com/fogleman/fauxgl"
+import "github.com/GerdW/fauxgl"
 
 type Axis uint8
 

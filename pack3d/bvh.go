@@ -1,6 +1,6 @@
 package pack3d
 
-import "github.com/fogleman/fauxgl"
+import "github.com/GerdW/fauxgl"
 
 type Tree []fauxgl.Box
 
@@ -70,7 +70,7 @@ type Node struct {
 }
 
 func NewNode(boxes []fauxgl.Box, depth int) *Node {
-	box := fauxgl.BoxForBoxes(boxes).Offset(2.5)
+	box := fauxgl.BoxForBoxes(boxes).Offset(0.75)
 	node := &Node{box, nil, nil}
 	node.Split(boxes, depth)
 	return node
