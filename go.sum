@@ -1,0 +1,8 @@
+github.com/fogleman/fauxgl v0.0.0-20200818143847-27cddc103802 h1:5vdq0jOnV15v1NdZbAcU+dIJ22rFgwaieiFewPvnKCA=
+github.com/fogleman/fauxgl v0.0.0-20200818143847-27cddc103802/go.mod h1:7f7F8EvO8MWvDx9sIoloOfZBCKzlWuZV/h3TjpXOO3k=
+github.com/fogleman/pack3d v0.0.0-20191021150454-4c6f72b19a76 h1:85kGAosy62tBTPvcLgat4avNRmrE5ItbRKa0ToXAyao=
+github.com/fogleman/pack3d v0.0.0-20191021150454-4c6f72b19a76/go.mod h1:/et0YbyUsc0gIZWLFLWk3lqFwvBxbolGdrecWaacltI=
+github.com/fogleman/simplify v0.0.0-20170216171241-d32f302d5046 h1:n3RPbpwXSFT0G8FYslzMUBDO09Ix8/dlqzvUkcJm4Jk=
+github.com/fogleman/simplify v0.0.0-20170216171241-d32f302d5046/go.mod h1:KDwyDqFmVUxUmo7tmqXtyaaJMdGon06y8BD2jmh84CQ=
+github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 h1:zYyBkD/k9seD2A7fsi6Oo2LfFZAehjjQMERAvZLEDnQ=
+github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646/go.mod h1:jpp1/29i3P1S/RLdc7JQKbRpFeM1dOBd8T9ki5s+AY8=

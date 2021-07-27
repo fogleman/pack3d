@@ -17,16 +17,14 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/fogleman/fauxgl"
-
 	"github.com/Authentise/pack3d/pack3d"
+	"github.com/fogleman/fauxgl"
 )
 
 const (
 	bvhDetail           = 8
 	annealingIterations = 2000000 // # of trials
 )
-
 
 /* This function returns current time (it's a timer) */
 func timed(name string) func() {
@@ -47,24 +45,24 @@ func main() {
 	}
 
 	type TransMap struct {
-		Filename         string
-		Transformation   [4][4]float64
-		VolumeWithSpacing   float64
+		Filename          string
+		Transformation    [4][4]float64
+		VolumeWithSpacing float64
 	}
 
 	type err_msg struct {
-		Error            string
+		Error string
 	}
 
 	var (
 		singleStlSize []fauxgl.Vector
-	    done          func()
-	    totalVolume   float64
+		done          func()
+		totalVolume   float64
 		dimension     []float64
 		ntime         int
 		srcStlNames   []string
 		transMaps     []TransMap
-		)
+	)
 
 	rand.Seed(time.Now().UTC().UnixNano())
 
@@ -73,14 +71,14 @@ func main() {
 	ok := false
 
 	// Loading build_volume size
-	for _, j := range os.Args[1:5]{
+	for _, j := range os.Args[1:5] {
 		_dimension, err := strconv.ParseFloat(j, 64)
-		if err == nil{
+		if err == nil {
 			dimension = append(dimension, float64(_dimension))
 			continue
 		}
 	}
-	spacing := dimension[3]/2.0
+	spacing := dimension[3] / 2.0
 	// frameSize is the vertex in the first quadrant
 	frameSize := fauxgl.V(dimension[0]/2.0, dimension[1]/2.0, dimension[2]/2.0)
 	buildVolume := dimension[0] * dimension[1] * dimension[2]
@@ -103,7 +101,7 @@ func main() {
 
 		totalVolume += mesh.BoundingBox().Volume()
 		size := mesh.BoundingBox().Size()
-		for i:=0; i<count; i++{
+		for i := 0; i < count; i++ {
 			singleStlSize = append(singleStlSize, size)
 			srcStlNames = append(srcStlNames, arg)
 		}
@@ -131,16 +129,16 @@ func main() {
 	}
 
 	side := math.Pow(totalVolume, 1.0/3)
-	model.Deviation = side / 32  //it is not the distance between objects. And it seems that it will not reflect the distance.
+	model.Deviation = side / 32 //it is not the distance between objects. And it seems that it will not reflect the distance.
 
 	/* This loop is to find the best packing stl, thus it will generate mutiple output
-		Add 'break' in the loop to stop program */
+	Add 'break' in the loop to stop program */
 	start := time.Now()
 	maxItemNum := len(model.Items)
 	var timeLimit float64
 	fillVolumeWithSpacing := 0.0
 	totalFillVolume := 0.0
-	null := fauxgl.Matrix{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0}
+	null := fauxgl.Matrix{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	timeLimit = 10
 
 	minItemNum := 0
@@ -152,13 +150,13 @@ func main() {
 		/* ntime is the times of trial to find a output solution, if after trying for 100 times
 		and no solution is found, then reset the model and try again. Usually if there is a solution,
 		ntime will be 1 or 2 for most cases. */
-		if ntime >= 100{
+		if ntime >= 100 {
 			/* There is a case that even I reset the model for many times, I still can't find a solution,
 			In this case, I need to set a threshold (20 second) to stop the software*/
-			if time.Since(start).Seconds() <= timeLimit{
+			if time.Since(start).Seconds() <= timeLimit {
 				model.Reset()
 				continue
-			}else{
+			} else {
 				// Linear search
 				//packItemNum -= 1
 
@@ -173,7 +171,7 @@ func main() {
 				model.Transformation()[packItemNum] = null
 				start = time.Now()
 
-				if minItemNum > maxItemNum{
+				if minItemNum > maxItemNum {
 					break
 				}
 
@@ -181,15 +179,15 @@ func main() {
 
 				//TODO: Unblock the following lines if want to return a json file including the error content
 				/*
-				err_content := err_msg{"Cannot get a result, please decrease your numbers of STLs or enlarge the frame sizes"}
-				fmt.Println(err_content.Error)
-				err_json, err := json.Marshal(err_content)
-				_, err := json.Marshal(err_content)
-				if err != nil{
-				fmt.Println("error:", err)
-				}
-				ioutil.WriteFile(fmt.Sprintf("%s.json", os.Args[5]), err_json, 0644)
-				break
+					err_content := err_msg{"Cannot get a result, please decrease your numbers of STLs or enlarge the frame sizes"}
+					fmt.Println(err_content.Error)
+					err_json, err := json.Marshal(err_content)
+					_, err := json.Marshal(err_content)
+					if err != nil{
+					fmt.Println("error:", err)
+					}
+					ioutil.WriteFile(fmt.Sprintf("%s.json", os.Args[5]), err_json, 0644)
+					break
 				*/
 			}
 		}
@@ -203,27 +201,29 @@ func main() {
 		success_model = model
 		start = time.Now()
 
-		if minItemNum > maxItemNum{
+		if minItemNum > maxItemNum {
 			break
 		}
 		model.Reset()
 	}
 
 	done = timed("writing mesh")
-	var (transMatrix [4][4]float64
-		fillPercentage float64)
+	var (
+		transMatrix    [4][4]float64
+		fillPercentage float64
+	)
 	transformation := success_model.Transformation()
-	for j:=0; j<len(success_model.Items); j++{
+	for j := 0; j < len(success_model.Items); j++ {
 		t := transformation[j]
 		fillVolumeWithSpacing = (singleStlSize[j].X + spacing) * (singleStlSize[j].Y + spacing) * (singleStlSize[j].Z + spacing)
-		if j<packItemNum {
+		if j < packItemNum {
 			totalFillVolume += fillVolumeWithSpacing
 			transMatrix = [4][4]float64{{t.X00, t.X01, t.X02, t.X03}, {t.X10, t.X11, t.X12, t.X13}, {t.X20, t.X21, t.X22, t.X23}, {t.X30, t.X31, t.X32, t.X33}}
-		}else{
+		} else {
 			transMatrix = [4][4]float64{{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
 		}
 		// It's actually the bounding box filling percentage
-		fillPercentage = totalFillVolume/buildVolume
+		fillPercentage = totalFillVolume / buildVolume
 		content := TransMap{srcStlNames[j], transMatrix, fillVolumeWithSpacing}
 		transMaps = append(transMaps, content)
 	}
