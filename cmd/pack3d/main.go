@@ -1,7 +1,7 @@
 /*
 Instruction: write down this into the command line to use the software
-<pack3d {your_frame_size_X,your_frame_size_Y,your_frame_size_Z} spacing your_output_name STL_numbers STL_path STL_numbers STL_path .....>
-For example: <pack3d {100,100,100} 5 Pikacu 1 /home/corner.stl 2 /home/Pika.stl>
+<pack3d --build_volume=your_frame_size_X,your_frame_size_Y,your_frame_size_Z --json_file=json_config_file --spacing=spacing --filename=export_filename>
+For example: <pack3d --json_file=input.json --build_volume=100,100,100>
 The unit of frame and spacing is millimeters.
 */
 
@@ -22,7 +22,6 @@ import (
 
 	"github.com/Authentise/pack3d/pack3d"
 	"github.com/fogleman/fauxgl"
-	"github.com/kr/pretty"
 )
 
 const (
@@ -106,7 +105,6 @@ func main() {
 	buildVolume := dimension[0] * dimension[1] * dimension[2]
 	//fmt.Println(frameSize)
 
-	meshMap := make(map[string]*fauxgl.Mesh)
 	coPrintMap := make(map[string]*Coprint)
 	/* Loading stl models */
 	for _, item := range config.Items {
@@ -119,7 +117,6 @@ func main() {
 				panic(err)
 			}
 
-			meshMap[item.Filename] = mesh.Copy()
 			done()
 
 			totalVolume += mesh.BoundingBox().Volume()
@@ -141,10 +138,7 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-
 			size := mesh.BoundingBox().Size()
-
-			meshMap[item.Filename] = mesh.Copy()
 
 			coMesh, err := fauxgl.LoadMesh(item.Coprint.Filename)
 			if err != nil {
@@ -171,12 +165,9 @@ func main() {
 				X32: item.Coprint.Transformation[3][2],
 				X33: item.Coprint.Transformation[3][3],
 			})
-			meshMap[item.Coprint.Filename] = coMesh.Copy()
-
 			size = coMesh.BoundingBox().Size()
 
 			mesh.Add(coMesh)
-
 			done()
 
 			totalVolume += mesh.BoundingBox().Volume()
@@ -201,14 +192,6 @@ func main() {
 		done()
 	}
 
-	// for j := 0; j < len(model.Items); j++ {
-	// 	fmt.Println("")
-	// 	fmt.Println("##########")
-	// 	pretty.Println(model.Items[j].Rotation, model.Items[j].Translation)
-	// 	fmt.Println("##########")
-	// 	fmt.Println("")
-	// }
-
 	if !ok {
 		fmt.Println("Usage: pack3d frame_size output_fname N1 mesh1.stl N2 mesh2.stl ...")
 		fmt.Println(" - Packs N copies of each mesh into as small of a volume as possible.")
@@ -227,7 +210,7 @@ func main() {
 	var timeLimit float64
 	fillVolumeWithSpacing := 0.0
 	totalFillVolume := 0.0
-	null := fauxgl.Matrix{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	null := fauxgl.Matrix{X00: 0, X01: 0, X02: 0, X03: 0, X10: 0, X11: 0, X12: 0, X13: 0, X20: 0, X21: 0, X22: 0, X23: 0, X30: 0, X31: 0, X32: 0, X33: 0}
 	timeLimit = 10
 
 	minItemNum := 0
@@ -275,7 +258,7 @@ func main() {
 					if err != nil{
 					fmt.Println("error:", err)
 					}
-					ioutil.WriteFile(fmt.Sprintf("%s.json", os.Args[5]), err_json, 0644)
+					ioutil.WriteFile(fmt.Sprintf("%s.json", *fileNameArg), err_json, 0644)
 					break
 				*/
 			}
@@ -316,10 +299,6 @@ func main() {
 			// It's actually the bounding box filling percentage
 			fillPercentage = totalFillVolume / buildVolume
 			transMaps = append(transMaps, TransMap{srcStlNames[j], transMatrix, fillVolumeWithSpacing})
-			fmt.Println("")
-			fmt.Println("##########")
-			pretty.Println(transMatrix, success_model.Items[j].Rotation, success_model.Items[j].Translation)
-			fmt.Println("##########")
 		} else {
 			t := transformation[j]
 			fillVolumeWithSpacing = (singleStlSize[j].X + spacing) * (singleStlSize[j].Y + spacing) * (singleStlSize[j].Z + spacing)
@@ -331,24 +310,18 @@ func main() {
 			}
 			// It's actually the bounding box filling percentage
 			fillPercentage = totalFillVolume / buildVolume
-			transMaps = append(transMaps, TransMap{srcStlNames[j], transMatrix, fillVolumeWithSpacing})
+			// transMaps = append(transMaps, TransMap{srcStlNames[j], transMatrix, fillVolumeWithSpacing})
 
-			m := meshMap[srcStlNames[j]]
-			m.Transform(fauxgl.Translate(success_model.Items[j].Translation))
-			t = pack3d.Rotations[success_model.Items[j].Rotation].Translate(success_model.Items[j].Translation)
 			transMatrix = [4][4]float64{{t.X00, t.X01, t.X02, t.X03}, {t.X10, t.X11, t.X12, t.X13}, {t.X20, t.X21, t.X22, t.X23}, {t.X30, t.X31, t.X32, t.X33}}
 			transMaps = append(transMaps, TransMap{srcStlNames[j], transMatrix, 0})
 
-			m = meshMap[coprint.Filename]
-			m.Transform(fauxgl.Translate(success_model.Items[j].Translation))
-			t = pack3d.Rotations[success_model.Items[j].Rotation].Translate(success_model.Items[j].Translation)
-			transMatrix = [4][4]float64{{t.X00, t.X01, t.X02, t.X03}, {t.X10, t.X11, t.X12, t.X13}, {t.X20, t.X21, t.X22, t.X23}, {t.X30, t.X31, t.X32, t.X33}}
+			transMatrix = [4][4]float64{
+				{t.X00, t.X01, t.X02, t.X03 + coprint.Transformation[0][3]},
+				{t.X10, t.X11, t.X12, t.X13 + coprint.Transformation[1][3]},
+				{t.X20, t.X21, t.X22, t.X23 + coprint.Transformation[2][3]},
+				{t.X30, t.X31, t.X32, t.X33 + coprint.Transformation[3][3]},
+			}
 			transMaps = append(transMaps, TransMap{coprint.Filename, transMatrix, 0})
-
-			fmt.Println("")
-			fmt.Println("##########")
-			pretty.Println(transMatrix, success_model.Items[j].Rotation, success_model.Items[j].Translation)
-			fmt.Println("##########")
 		}
 	}
 	positions_json, err := json.Marshal(transMaps)
@@ -358,14 +331,11 @@ func main() {
 	fmt.Println("the fill percentage is:", fillPercentage)
 	ioutil.WriteFile(fmt.Sprintf("%s.json", *fileNameArg), positions_json, 0644)
 	// os.Stdout.Write(positions_json)
-	// model.Mesh().SaveSTL(fmt.Sprintf("pack3d-%s.stl", *fileNameArg))
 
-	// STL file is no longer created
+	// STL file is no longer created, results returned as JSON for separate packer.
 	// Unblock the following line if want to generate the packing STL
-	/*
-		model.Mesh().SaveSTL(fmt.Sprintf("pack3d-%s.stl", os.Args[5]))
-		model.TreeMesh().SaveSTL(fmt.Sprintf("out%dtree.stl", int(score*100000)))
-	*/
+	// model.Mesh().SaveSTL(fmt.Sprintf("pack3d-%s.stl", *fileNameArg))
+	// model.TreeMesh().SaveSTL(fmt.Sprintf("out%dtree.stl", int(score*100000)))
 	done()
 }
 
