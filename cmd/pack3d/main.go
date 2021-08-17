@@ -1,7 +1,7 @@
 /*
 Instruction: write down this into the command line to use the software
-<pack3d --build_volume=your_frame_size_X,your_frame_size_Y,your_frame_size_Z --json_file=json_config_file --spacing=spacing --filename=export_filename>
-For example: <pack3d --json_file=input.json --build_volume=100,100,100>
+<pack3d --json_file=json_config_file --filename=export_filename>
+For example: <pack3d --json_file=input.json>
 The unit of frame and spacing is millimeters.
 */
 
@@ -16,8 +16,6 @@ import (
 	"math"
 	"math/rand"
 	"os"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/Authentise/pack3d/pack3d"
@@ -42,8 +40,6 @@ func timed(name string) func() {
 
 func main() {
 	var jsonFileArg = flag.String("json_file", "", "json config file")
-	var buildVolumeArg = flag.String("build_volume", "100,100,100", "build volume")
-	var spacingArg = flag.Float64("spacing", 2, "spacing")
 	var fileNameArg = flag.String("filename", "pack3d", "export filename")
 	flag.Parse()
 
@@ -79,7 +75,6 @@ func main() {
 		singleStlSize []fauxgl.Vector
 		done          func()
 		totalVolume   float64
-		dimension     []float64
 		ntime         int
 		srcStlNames   []string
 		transMaps     []TransMap
@@ -91,21 +86,13 @@ func main() {
 	count := 1
 	ok := false
 
-	// Loading build_volume size
-	for _, j := range strings.Split(*buildVolumeArg, ",") {
-		_dimension, err := strconv.ParseFloat(j, 64)
-		if err == nil {
-			dimension = append(dimension, float64(_dimension))
-			continue
-		}
-	}
-	spacing := *spacingArg / 2.0
+	spacing := config.Spacing / 2.0
 	// frameSize is the vertex in the first quadrant
-	frameSize := fauxgl.V(dimension[0]/2.0, dimension[1]/2.0, dimension[2]/2.0)
-	buildVolume := dimension[0] * dimension[1] * dimension[2]
+	frameSize := fauxgl.V(config.BuildVolume[0]/2.0, config.BuildVolume[1]/2.0, config.BuildVolume[2]/2.0)
+	buildVolume := config.BuildVolume[0] * config.BuildVolume[1] * config.BuildVolume[2]
 	//fmt.Println(frameSize)
 
-	coPrintMap := make(map[string]*Coprint)
+	coPrintMap := make(map[string][]*Coprint)
 	/* Loading stl models */
 	for _, item := range config.Items {
 		done = timed(fmt.Sprintf("loading mesh %s", item.Filename))
@@ -138,40 +125,36 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			size := mesh.BoundingBox().Size()
+			for _, cp := range item.Coprint {
+				coMesh, err := fauxgl.LoadMesh(cp.Filename)
+				if err != nil {
+					panic(err)
+				}
 
-			coMesh, err := fauxgl.LoadMesh(item.Coprint.Filename)
-			if err != nil {
-				panic(err)
+				coMesh.Transform(fauxgl.Matrix{
+					X00: cp.Transformation[0][0],
+					X01: cp.Transformation[0][1],
+					X02: cp.Transformation[0][2],
+					X03: cp.Transformation[0][3],
+					X10: cp.Transformation[1][0],
+					X11: cp.Transformation[1][1],
+					X12: cp.Transformation[1][2],
+					X13: cp.Transformation[1][3],
+					X20: cp.Transformation[2][0],
+					X21: cp.Transformation[2][1],
+					X22: cp.Transformation[2][2],
+					X23: cp.Transformation[2][3],
+					X30: cp.Transformation[3][0],
+					X31: cp.Transformation[3][1],
+					X32: cp.Transformation[3][2],
+					X33: cp.Transformation[3][3],
+				})
+				mesh.Add(coMesh)
 			}
-
-			size = coMesh.BoundingBox().Size()
-
-			coMesh.Transform(fauxgl.Matrix{
-				X00: item.Coprint.Transformation[0][0],
-				X01: item.Coprint.Transformation[0][1],
-				X02: item.Coprint.Transformation[0][2],
-				X03: item.Coprint.Transformation[0][3],
-				X10: item.Coprint.Transformation[1][0],
-				X11: item.Coprint.Transformation[1][1],
-				X12: item.Coprint.Transformation[1][2],
-				X13: item.Coprint.Transformation[1][3],
-				X20: item.Coprint.Transformation[2][0],
-				X21: item.Coprint.Transformation[2][1],
-				X22: item.Coprint.Transformation[2][2],
-				X23: item.Coprint.Transformation[2][3],
-				X30: item.Coprint.Transformation[3][0],
-				X31: item.Coprint.Transformation[3][1],
-				X32: item.Coprint.Transformation[3][2],
-				X33: item.Coprint.Transformation[3][3],
-			})
-			size = coMesh.BoundingBox().Size()
-
-			mesh.Add(coMesh)
 			done()
 
 			totalVolume += mesh.BoundingBox().Volume()
-			size = mesh.BoundingBox().Size()
+			size := mesh.BoundingBox().Size()
 			for i := 0; i < count; i++ {
 				singleStlSize = append(singleStlSize, size)
 				srcStlNames = append(srcStlNames, item.Filename)
@@ -314,14 +297,15 @@ func main() {
 
 			transMatrix = [4][4]float64{{t.X00, t.X01, t.X02, t.X03}, {t.X10, t.X11, t.X12, t.X13}, {t.X20, t.X21, t.X22, t.X23}, {t.X30, t.X31, t.X32, t.X33}}
 			transMaps = append(transMaps, TransMap{srcStlNames[j], transMatrix, 0})
-
-			transMatrix = [4][4]float64{
-				{t.X00, t.X01, t.X02, t.X03 + coprint.Transformation[0][3]},
-				{t.X10, t.X11, t.X12, t.X13 + coprint.Transformation[1][3]},
-				{t.X20, t.X21, t.X22, t.X23 + coprint.Transformation[2][3]},
-				{t.X30, t.X31, t.X32, t.X33 + coprint.Transformation[3][3]},
+			for _, cp := range coprint {
+				transMatrix = [4][4]float64{
+					{t.X00, t.X01, t.X02, t.X03 + cp.Transformation[0][3]},
+					{t.X10, t.X11, t.X12, t.X13 + cp.Transformation[1][3]},
+					{t.X20, t.X21, t.X22, t.X23 + cp.Transformation[2][3]},
+					{t.X30, t.X31, t.X32, t.X33 + cp.Transformation[3][3]},
+				}
+				transMaps = append(transMaps, TransMap{cp.Filename, transMatrix, 0})
 			}
-			transMaps = append(transMaps, TransMap{coprint.Filename, transMatrix, 0})
 		}
 	}
 	positions_json, err := json.Marshal(transMaps)
@@ -340,10 +324,12 @@ func main() {
 }
 
 type Config struct {
-	Items []struct {
-		Filename string   `json:"filename"`
-		Count    int      `json:"count"`
-		Coprint  *Coprint `json:"coprint,omitempty"`
+	BuildVolume [3]float64 `json:"build_volume"`
+	Spacing     float64    `json:"spacing"`
+	Items       []struct {
+		Filename string     `json:"filename"`
+		Count    int        `json:"count"`
+		Coprint  []*Coprint `json:"coprint,omitempty"`
 	} `json:"items"`
 }
 
