@@ -10,23 +10,35 @@ Pack3d is written in golang and the installation instructions can be found in th
 ### Example
 
 ```
-pack3d --json_file=input.json --build_volume=100,100,100
+pack3d --json_file=input.json
 ```
 
 Output example:
 
 ```
-[
-   {
-      "Filename": "Box.stl",
-      "Transformation": [
-          [ -1,           0,  -1.224e-16, -17.991 ],
-          [  0,           1,   0,         -19.997 ],
-          [  1.224e-16,   0,  -1,          22.451 ],
-          [  0,           0,   0,          1      ]
-     ],
-     "VolumeWithSpacing": 16015.625
-   }
-]
+{
+   "build_volume": [1, 0, 0],
+   "spacing": 2,
+   "items": [
+      {
+         "filename": "./tests/coprint/Christmas_1.stl",
+         "count": 1,
+         "copack": [
+            {
+               "filename": "./tests/coprint/Merry.stl",
+               "transformation": [
+                  [1, 0, 0, -60],
+                  [0, 1, 0, -343],
+                  [0, 0, 1, 0],
+                  [0, 0, 0, 1]
+               ]
+            }
+         ]
+      },
+      {
+         "filename": "./tests/coprint/logo.stl",
+         "count": 1
+      }
+   ]
+}
 ```
-
