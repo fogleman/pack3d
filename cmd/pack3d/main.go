@@ -131,7 +131,8 @@ func main() {
 					panic(err)
 				}
 
-				coMesh.Transform(fauxgl.Matrix{
+				coMesh.parent_id = ...
+				coMesh.co_packing_transform(fauxgl.Matrix{
 					X00: cp.Transformation[0][0],
 					X01: cp.Transformation[0][1],
 					X02: cp.Transformation[0][2],
