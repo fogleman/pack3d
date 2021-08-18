@@ -17,6 +17,19 @@
         {
             "filename": "./tests/coprint/logo.stl",
             "count": 1
-        }
+        },
+        {
+             "filename": "./tests/coprint/Christmas.stl",
+             "count": 2,
+             "coprint": [{
+                 "filename": "./tests/coprint/Merry.stl",
+                 "transformation": [
+                     [1, 0, 0, -500],
+                     [0, 1, 0, -343],
+                     [0, 0, 1, 0],
+                     [0, 0, 0, 1]
+                 ]
+             }]
+         },
     ]
 }
