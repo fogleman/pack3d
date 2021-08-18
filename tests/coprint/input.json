@@ -4,7 +4,7 @@
     "items": [{
             "filename": "./tests/coprint/Christmas_1.stl",
             "count": 1,
-            "coprint": [{
+            "copack": [{
                 "filename": "./tests/coprint/Merry.stl",
                 "transformation": [
                     [1, 0, 0, -60],
@@ -21,10 +21,10 @@
         {
              "filename": "./tests/coprint/Christmas.stl",
              "count": 2,
-             "coprint": [{
+             "copack": [{
                  "filename": "./tests/coprint/Merry.stl",
                  "transformation": [
-                     [1, 0, 0, -500],
+                     [1, 0, 0, -60],
                      [0, 1, 0, -343],
                      [0, 0, 1, 0],
                      [0, 0, 0, 1]

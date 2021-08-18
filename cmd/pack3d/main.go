@@ -196,7 +196,12 @@ func main() {
 	var timeLimit float64
 	fillVolumeWithSpacing := 0.0
 	totalFillVolume := 0.0
-	null := fauxgl.Matrix{X00: 0, X01: 0, X02: 0, X03: 0, X10: 0, X11: 0, X12: 0, X13: 0, X20: 0, X21: 0, X22: 0, X23: 0, X30: 0, X31: 0, X32: 0, X33: 0}
+	null := fauxgl.Matrix{
+		X00: 0, X01: 0, X02: 0, X03: 0,
+		X10: 0, X11: 0, X12: 0, X13: 0,
+		X20: 0, X21: 0, X22: 0, X23: 0,
+		X30: 0, X31: 0, X32: 0, X33: 0
+	}
 	timeLimit = 10
 
 	minItemNum := 0
@@ -210,9 +215,12 @@ func main() {
 		ntime will be 1 or 2 for most cases. */
 		for _, item := range config.Items {
 		     if item.Copack != nil {
-		         /* step 1: find out the parent's transformation (given by the model.Pack(...)), by using the parent_id or whatever else.
-		         /* step 2: override the item.Transform (given by the packing algorithm) with:
-		         /*              a matrix multiplication of the parent's transform (found in step 1) by the item.co_packing_transform. The order of the multiplication is meaningful and will be dealt with later.
+		         /*
+		         	step 1: find out the parent's transformation (given by the model.Pack(...)), by using the parent_id or whatever else.
+
+		            step 2: override the item.Transform (given by the packing algorithm) with:
+		                    a matrix multiplication of the parent's transform (found in step 1) by the item.co_packing_transform.
+		                    The order of the multiplication is meaningful and will be dealt with later. */
 		     }
 		}
 		if ntime >= 100 {
