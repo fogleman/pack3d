@@ -206,6 +206,13 @@ func main() {
 		/* ntime is the times of trial to find a output solution, if after trying for 100 times
 		and no solution is found, then reset the model and try again. Usually if there is a solution,
 		ntime will be 1 or 2 for most cases. */
+		for _, item := range config.Items {
+		     if item.Coprint != nil {
+		         /* step 1: find out the parent's transformation (given by the model.Pack(...)), by using the parent_id or whatever else.
+		         /* step 2: override the item.Transform (given by the packing algorithm) with:
+		         /*              a matrix multiplication of the parent's transform (found in step 1) by the item.co_packing_transform. The order of the multiplication is meaningful and will be dealt with later.
+		     }
+		}
 		if ntime >= 100 {
 			/* There is a case that even I reset the model for many times, I still can't find a solution,
 			In this case, I need to set a threshold (20 second) to stop the software*/
