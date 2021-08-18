@@ -2,7 +2,7 @@
 Instruction: write down this into the command line to use the software
 <pack3d --json_file=json_config_file --filename=export_filename>
 For example: <pack3d --json_file=input.json>
-The unit of frame and spacing is millimeters.
+The frame and spacing's units, in the json file, are in millimeters.
 */
 
 package main
@@ -27,7 +27,7 @@ const (
 	annealingIterations = 2000000 // # of trials
 )
 
-/* This function returns current time (it's a timer) */
+/* This function returns the current time (it is a timer). */
 func timed(name string) func() {
 	if len(name) > 0 {
 		fmt.Printf("%s... ", name)
@@ -92,13 +92,14 @@ func main() {
 	buildVolume := config.BuildVolume[0] * config.BuildVolume[1] * config.BuildVolume[2]
 	//fmt.Println(frameSize)
 
-	coPrintMap := make(map[string][]*Coprint)
+
 	/* Loading stl models */
+	coPackMap := make(map[string][]*Copack)
 	for _, item := range config.Items {
 		done = timed(fmt.Sprintf("loading mesh %s", item.Filename))
 		var mesh *fauxgl.Mesh
 		var err error
-		if item.Coprint == nil {
+		if item.Copack == nil {
 			mesh, err = fauxgl.LoadMesh(item.Filename)
 			if err != nil {
 				panic(err)
@@ -120,12 +121,12 @@ func main() {
 			mesh.Center()
 			done()
 		} else {
-			coPrintMap[item.Filename] = item.Coprint
+			coPackMap[item.Filename] = item.Copack
 			mesh, err = fauxgl.LoadMesh(item.Filename)
 			if err != nil {
 				panic(err)
 			}
-			for _, cp := range item.Coprint {
+			for _, cp := range item.Copack {
 				coMesh, err := fauxgl.LoadMesh(cp.Filename)
 				if err != nil {
 					panic(err)
@@ -187,7 +188,8 @@ func main() {
 	side := math.Pow(totalVolume, 1.0/3)
 	model.Deviation = side / 32 //it is not the distance between objects. And it seems that it will not reflect the distance.
 
-	/* This loop is to find the best packing stl, thus it will generate mutiple output
+
+	/*  Mesh packing loop. This loop is to find the best STL mesh packing.
 	Add 'break' in the loop to stop program */
 	start := time.Now()
 	maxItemNum := len(model.Items)
@@ -207,7 +209,7 @@ func main() {
 		and no solution is found, then reset the model and try again. Usually if there is a solution,
 		ntime will be 1 or 2 for most cases. */
 		for _, item := range config.Items {
-		     if item.Coprint != nil {
+		     if item.Copack != nil {
 		         /* step 1: find out the parent's transformation (given by the model.Pack(...)), by using the parent_id or whatever else.
 		         /* step 2: override the item.Transform (given by the packing algorithm) with:
 		         /*              a matrix multiplication of the parent's transform (found in step 1) by the item.co_packing_transform. The order of the multiplication is meaningful and will be dealt with later.
@@ -277,7 +279,7 @@ func main() {
 	)
 	transformation := success_model.Transformation()
 	for j := 0; j < len(success_model.Items); j++ {
-		coprint, ok := coPrintMap[srcStlNames[j]]
+		copack, ok := coPackMap[srcStlNames[j]]
 		if !ok {
 			t := transformation[j]
 			fillVolumeWithSpacing = (singleStlSize[j].X + spacing) * (singleStlSize[j].Y + spacing) * (singleStlSize[j].Z + spacing)
@@ -305,7 +307,7 @@ func main() {
 
 			transMatrix = [4][4]float64{{t.X00, t.X01, t.X02, t.X03}, {t.X10, t.X11, t.X12, t.X13}, {t.X20, t.X21, t.X22, t.X23}, {t.X30, t.X31, t.X32, t.X33}}
 			transMaps = append(transMaps, TransMap{srcStlNames[j], transMatrix, 0})
-			for _, cp := range coprint {
+			for _, cp := range copack {
 				transMatrix = [4][4]float64{
 					{t.X00, t.X01, t.X02, t.X03 + cp.Transformation[0][3]},
 					{t.X10, t.X11, t.X12, t.X13 + cp.Transformation[1][3]},
@@ -332,16 +334,16 @@ func main() {
 }
 
 type Config struct {
-	BuildVolume [3]float64 `json:"build_volume"`
-	Spacing     float64    `json:"spacing"`
+	BuildVolume [3]float64  `json:"build_volume"`
+	Spacing     float64     `json:"spacing"`
 	Items       []struct {
-		Filename string     `json:"filename"`
-		Count    int        `json:"count"`
-		Coprint  []*Coprint `json:"coprint,omitempty"`
+		Filename string    `json:"filename"`
+		Count    int       `json:"count"`
+		Copack  []*Copack  `json:"copack,omitempty"`
 	} `json:"items"`
 }
 
-type Coprint struct {
+type Copack struct {
 	Filename       string        `json:"filename"`
 	Transformation [4][4]float64 `json:"transformation"`
 }
