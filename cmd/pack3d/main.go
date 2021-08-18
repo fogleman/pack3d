@@ -95,6 +95,7 @@ func main() {
 
 	/* Loading stl models */
 	coPackMap := make(map[string][]*Copack)
+	item_count = 0
 	for _, item := range config.Items {
 		done = timed(fmt.Sprintf("loading mesh %s", item.Filename))
 		var mesh *fauxgl.Mesh
@@ -119,6 +120,7 @@ func main() {
 
 			done = timed("centering mesh")
 			mesh.Center()
+			item_count = item_count + 1
 			done()
 		} else {
 			coPackMap[item.Filename] = item.Copack
@@ -132,7 +134,8 @@ func main() {
 					panic(err)
 				}
 
-				coMesh.parent_id = ...
+				coMesh.parent_id = item_count
+				item_count = item_count + 1
 				coMesh.co_packing_transform(fauxgl.Matrix{
 					X00: cp.Transformation[0][0],
 					X01: cp.Transformation[0][1],
@@ -151,7 +154,8 @@ func main() {
 					X32: cp.Transformation[3][2],
 					X33: cp.Transformation[3][3],
 				})
-				mesh.Add(coMesh)
+				coMesh.Center()
+				model.Add(coMesh, bvhDetail, count, spacing)
 			}
 			done()
 
