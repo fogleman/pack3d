@@ -2,7 +2,7 @@
     "build_volume": [1, 0, 0],
     "spacing": 2,
     "items": [{
-            "filename": "./tests/coprint/Christmas.stl",
+            "filename": "./tests/coprint/Christmas_1.stl",
             "count": 1,
             "coprint": [{
                 "filename": "./tests/coprint/Merry.stl",
