@@ -1,9 +1,9 @@
 {
-    "build_volume": [1, 0, 0],
+    "build_volume": [500,500,500],
     "spacing": 2,
     "items": [
         {
-            "filename": "./tests/coprint/Christmas_1.stl",
+            "filename": "./tests/coprint/Christmas.stl",
             "count": 1,
             "copack": [
                 {
@@ -35,6 +35,6 @@
                     ]
                 }
             ]
-        },
+        }
     ]
 }

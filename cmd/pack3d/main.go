@@ -83,7 +83,6 @@ func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
 
 	model := pack3d.NewModel()
-	count := 1
 	ok := false
 
 	spacing := config.Spacing / 2.0
@@ -92,10 +91,8 @@ func main() {
 	buildVolume := config.BuildVolume[0] * config.BuildVolume[1] * config.BuildVolume[2]
 	//fmt.Println(frameSize)
 
-
 	/* Loading stl models */
 	coPackMap := make(map[string][]*Copack)
-	item_count = 0
 	for _, item := range config.Items {
 		done = timed(fmt.Sprintf("loading mesh %s", item.Filename))
 		var mesh *fauxgl.Mesh
@@ -110,7 +107,7 @@ func main() {
 
 			totalVolume += mesh.BoundingBox().Volume()
 			size := mesh.BoundingBox().Size()
-			for i := 0; i < count; i++ {
+			for i := 0; i < item.Count; i++ {
 				singleStlSize = append(singleStlSize, size)
 				srcStlNames = append(srcStlNames, item.Filename)
 			}
@@ -120,7 +117,6 @@ func main() {
 
 			done = timed("centering mesh")
 			mesh.Center()
-			item_count = item_count + 1
 			done()
 		} else {
 			coPackMap[item.Filename] = item.Copack
@@ -134,9 +130,7 @@ func main() {
 					panic(err)
 				}
 
-				coMesh.parent_id = item_count
-				item_count = item_count + 1
-				coMesh.co_packing_transform(fauxgl.Matrix{
+				coMesh.Transform(fauxgl.Matrix{
 					X00: cp.Transformation[0][0],
 					X01: cp.Transformation[0][1],
 					X02: cp.Transformation[0][2],
@@ -154,14 +148,14 @@ func main() {
 					X32: cp.Transformation[3][2],
 					X33: cp.Transformation[3][3],
 				})
-				coMesh.Center()
-				model.Add(coMesh, bvhDetail, count, spacing)
+				// coMesh.Center()
+				mesh.Add(coMesh)
 			}
 			done()
 
 			totalVolume += mesh.BoundingBox().Volume()
 			size := mesh.BoundingBox().Size()
-			for i := 0; i < count; i++ {
+			for i := 0; i < item.Count; i++ {
 				singleStlSize = append(singleStlSize, size)
 				srcStlNames = append(srcStlNames, item.Filename)
 			}
@@ -176,7 +170,7 @@ func main() {
 
 		done = timed("building bvh tree")
 
-		model.Add(mesh, bvhDetail, count, spacing)
+		model.Add(mesh, bvhDetail, item.Count, spacing)
 		ok = true
 		done()
 	}
@@ -192,7 +186,6 @@ func main() {
 	side := math.Pow(totalVolume, 1.0/3)
 	model.Deviation = side / 32 //it is not the distance between objects. And it seems that it will not reflect the distance.
 
-
 	/*  Mesh packing loop. This loop is to find the best STL mesh packing.
 	Add 'break' in the loop to stop program */
 	start := time.Now()
@@ -204,7 +197,7 @@ func main() {
 		X00: 0, X01: 0, X02: 0, X03: 0,
 		X10: 0, X11: 0, X12: 0, X13: 0,
 		X20: 0, X21: 0, X22: 0, X23: 0,
-		X30: 0, X31: 0, X32: 0, X33: 0
+		X30: 0, X31: 0, X32: 0, X33: 0,
 	}
 	timeLimit = 10
 
@@ -217,16 +210,6 @@ func main() {
 		/* ntime is the times of trial to find a output solution, if after trying for 100 times
 		and no solution is found, then reset the model and try again. Usually if there is a solution,
 		ntime will be 1 or 2 for most cases. */
-		for _, item := range config.Items {
-		     if item.Copack != nil {
-		         /*
-		         	step 1: find out the parent's transformation (given by the model.Pack(...)), by using the parent_id or whatever else.
-
-		            step 2: override the item.Transform (given by the packing algorithm) with:
-		                    a matrix multiplication of the parent's transform (found in step 1) by the item.co_packing_transform.
-		                    The order of the multiplication is meaningful and will be dealt with later. */
-		     }
-		}
 		if ntime >= 100 {
 			/* There is a case that even I reset the model for many times, I still can't find a solution,
 			In this case, I need to set a threshold (20 second) to stop the software*/
@@ -305,6 +288,7 @@ func main() {
 			fillPercentage = totalFillVolume / buildVolume
 			transMaps = append(transMaps, TransMap{srcStlNames[j], transMatrix, fillVolumeWithSpacing})
 		} else {
+			// step 1: find out the parent's transformation (given by the model.Pack(...)), by using the parent_id or whatever else.
 			t := transformation[j]
 			fillVolumeWithSpacing = (singleStlSize[j].X + spacing) * (singleStlSize[j].Y + spacing) * (singleStlSize[j].Z + spacing)
 			if j < packItemNum {
@@ -320,11 +304,33 @@ func main() {
 			transMatrix = [4][4]float64{{t.X00, t.X01, t.X02, t.X03}, {t.X10, t.X11, t.X12, t.X13}, {t.X20, t.X21, t.X22, t.X23}, {t.X30, t.X31, t.X32, t.X33}}
 			transMaps = append(transMaps, TransMap{srcStlNames[j], transMatrix, 0})
 			for _, cp := range copack {
+				// step 2: override the item.Transform (given by the packing algorithm) with:
+				// a matrix multiplication of the parent's transform (found in step 1) by the item.co_packing_transform.
+				// The order of the multiplication is meaningful and will be dealt with later.
+				cpMatrix := fauxgl.Matrix{
+					X00: cp.Transformation[0][0],
+					X01: cp.Transformation[0][1],
+					X02: cp.Transformation[0][2],
+					X03: cp.Transformation[0][3],
+					X10: cp.Transformation[1][0],
+					X11: cp.Transformation[1][1],
+					X12: cp.Transformation[1][2],
+					X13: cp.Transformation[1][3],
+					X20: cp.Transformation[2][0],
+					X21: cp.Transformation[2][1],
+					X22: cp.Transformation[2][2],
+					X23: cp.Transformation[2][3],
+					X30: cp.Transformation[3][0],
+					X31: cp.Transformation[3][1],
+					X32: cp.Transformation[3][2],
+					X33: cp.Transformation[3][3],
+				}
+				t = t.Mul(cpMatrix)
 				transMatrix = [4][4]float64{
-					{t.X00, t.X01, t.X02, t.X03 + cp.Transformation[0][3]},
-					{t.X10, t.X11, t.X12, t.X13 + cp.Transformation[1][3]},
-					{t.X20, t.X21, t.X22, t.X23 + cp.Transformation[2][3]},
-					{t.X30, t.X31, t.X32, t.X33 + cp.Transformation[3][3]},
+					{t.X00, t.X01, t.X02, t.X03},
+					{t.X10, t.X11, t.X12, t.X13},
+					{t.X20, t.X21, t.X22, t.X23},
+					{t.X30, t.X31, t.X32, t.X33},
 				}
 				transMaps = append(transMaps, TransMap{cp.Filename, transMatrix, 0})
 			}
@@ -346,12 +352,12 @@ func main() {
 }
 
 type Config struct {
-	BuildVolume [3]float64  `json:"build_volume"`
-	Spacing     float64     `json:"spacing"`
+	BuildVolume [3]float64 `json:"build_volume"`
+	Spacing     float64    `json:"spacing"`
 	Items       []struct {
 		Filename string    `json:"filename"`
 		Count    int       `json:"count"`
-		Copack  []*Copack  `json:"copack,omitempty"`
+		Copack   []*Copack `json:"copack,omitempty"`
 	} `json:"items"`
 }
 
