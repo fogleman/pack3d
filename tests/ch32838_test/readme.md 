@@ -1,0 +1,7 @@
+##Manual Test
+
+Manual tests to run on the nesting algorithm. 
+ 
+**Test 1**
+ <COMMAND TO RUN> `pack3d --json_file=tests/coprint/input.json` 
+Observation: Works well. will not exceed the frame.
