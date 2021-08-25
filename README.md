@@ -10,7 +10,7 @@ Pack3d is written in golang and the installation instructions can be found in th
 ### Example
 
 ```
-pack3d --json_file=input.json
+pack3d --json_file=input.json --filename=output
 ```
 
 Output example:
