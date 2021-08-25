@@ -1,0 +1,9 @@
+## ch32838 Manual Test
+
+Manual test to run on the co-packing algorithm:
+ 
+**Test**
+cd ../../..
+ <COMMAND TO RUN> `pack3d --json_file=tests/ch32838_test/input.json --filename=tests/ch32838_test/output/output` 
+
+Observation: Works well. will not exceed the frame.

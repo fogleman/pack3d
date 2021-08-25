@@ -6,15 +6,15 @@ pipeline {
     stages {
         stage('Test single model (pass if not fails)') {
             steps {
-                sh 'bin/pack3d 20 40 30 2.0 pack3d_transforms 1 tests/stl/logo.stl'
-                sh 'rm pack3d_transforms.json'
+                sh 'bin/pack3d --json_file=tests/jenkins_tests/input_jenkins_test_1.json --filename=tests/jenkins_tests/output_jenkins_test_1'
+                sh 'rm tests/jenkins_tests/output_jenkins_test_1.json'
             }
         }
 
-        stage('Test multiple models (pass if not fails)') {
+        stage('Test multiple models and co-packing (pass if not fails)') {
             steps {
-                sh 'bin/pack3d 20 40 30 2.0 pack3d_transforms 1 tests/stl/cube.stl 1 tests/stl/logo.stl 1 tests/stl/corner.stl'
-                sh 'rm pack3d_transforms.json'
+                sh 'bin/pack3d --json_file=tests/jenkins_tests/input_jenkins_test_2.json --filename=tests/jenkins_tests/output_jenkins_test_2'
+                sh 'rm tests/jenkins_tests/output_jenkins_test_2.json'
             }
         }
     }

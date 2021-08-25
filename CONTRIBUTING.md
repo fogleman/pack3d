@@ -20,56 +20,33 @@ Then go to the src folder and do:
 go get github.com/fogleman/fauxgl
 ```
 
-Clone the repo Authentise/pack3d in your ```go/src``` folder.
+Clone the Authentise/pack3d repository into your ```go/src``` folder.
+```
+git clone git@github.com:Authentise/pack3d.git
+```
 
-From source directory,
+cd into the pack3d folder:
 ```
 cd cmd/pack3d
-go get
-go install
+go get; go install
 ```
 
-From source directory,
+Now, cd ../.. directory,
 ```
 cd cmd/binpack
-go get
-go install
+go get; go install
 ```
 
 Bin file is run using, where frame_x, frame_y, frame_z are the build_crate size.
 ```
-pack3d {frame_x,frame_y,frame_z} mini_spacing output_file_name model_num model_file
+pack3d --json_file=input.json --filename=output
 ```
 
-For example,
-```
-pack3d {100,100,100} 5 output 1 mesh1.stl 1 mesh2.stl
-```
+See folder tests/ch32838_test for an example.
 
-After running `pack3d`, it will generate a json file. The format of the json file is:
+NB: Nautilus can only use a binary file built on a linux machine and not from macOS.
 
-```
-{"Filename":  , "Transformation":  , "VolumeWithSpacing":  }
-```
 
-For example:
-
-```
-[
-   {
-      "Filename": "Box.stl",
-      "Transformation": [
-          [ -1,           0, -1.224e-16, -17.991 ],
-          [  0,           1,  0,         -19.997 ],
-          [  1.224e-16,   0, -1,          22.451 ],
-          [  0,           0,  0,          1      ]
-     ],
-     "VolumeWithSpacing": 16015.625
-   }
-]
-```
-
-NB: Nautilus can only use a binary file built on a linux machine.
 
 ## 2. Codebase
 
@@ -80,14 +57,14 @@ What follows below is a quick peek into a few important files:
 
 The ```func main()``` performs command line's arguments parsing and related actions:
 
-- pack3d version which can be invoked in the CLI with ```pack3d --version```.
+- pack3d version which can be invoked in the CLI.
 - new pack3d model creation: ```model := pack3d.NewModel()```
 - build-volume variables set up. Notice ```annealingIterations = 2000000```
 - STL geometries loading and addition of each loaded geometry to the pack3d model: ```model.Add(mesh, bvhDetail, count, spacing)```
 - packing of the pack3d model.
-	- ```model.Pack(annealingIterations, nil, singleStlSize, frameSize, packItemNum)```
-	- there is a time limit to break out if the packing algotithm is struggling.
-	- binary search. Uncommenting some code allows serving up an error-related json file.
+  - ```model.Pack(annealingIterations, nil, singleStlSize, frameSize, packItemNum)```
+  - there is a time limit to break out if the packing algotithm is struggling.
+  - binary search. Uncommenting some code allows serving up an error-related json file.
 - json data generation. More specifically a list of transformations applied to each original model inside of the build volume.
 - creation of STL pack3d model file - requires uncommenting some code. ```model.Mesh().SaveSTL( ... )```
 ```model.TreeMesh().SaveSTL( ... )```

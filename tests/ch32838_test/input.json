@@ -1,0 +1,31 @@
+{
+    "build_volume": [50,50,50],
+    "spacing": 1,
+    "items": [
+        {
+            "filename": "./tests/ch32838_test/vertical_solid_arrow.stl",
+            "count": 14,
+            "copack": [
+                {
+                    "filename": "./tests/ch32838_test/arrow-minted_cuboid.stl"
+                },
+                {
+                    "filename": "./tests/ch32838_test/vertical_solid_arrow__translated.stl"
+                }
+            ]
+        },
+        {
+            "filename": "./tests/ch32838_test/logo.stl",
+            "count": 21
+        },
+        {
+            "filename": "./tests/ch32838_test/arrow-minted_cuboid.stl",
+            "count": 10,
+            "copack": [
+                {
+                    "filename": "./tests/ch32838_test/vertical_solid_arrow.stl"
+                }
+            ]
+        }
+    ]
+}

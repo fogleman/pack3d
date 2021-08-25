@@ -1,0 +1,10 @@
+{
+    "build_volume": [50, 50, 50],
+    "spacing": 2,
+    "items": [
+        {
+            "filename": "tests/jenkins_tests/logo.stl",
+            "count": 1
+        }
+    ]
+}
