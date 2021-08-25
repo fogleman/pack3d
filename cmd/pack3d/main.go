@@ -303,7 +303,7 @@ func main() {
 
 	// STL file is no longer created, results returned as JSON for separate packer.
 	// Unblock the following line if want to generate the packing STL
-	model.Mesh().SaveSTL(fmt.Sprintf("pack3d-%s.stl", *fileNameArg))
+	// model.Mesh().SaveSTL(fmt.Sprintf("pack3d-%s.stl", *fileNameArg))
 	// model.TreeMesh().SaveSTL(fmt.Sprintf("out%dtree.stl", int(score*100000)))
 	done()
 }
