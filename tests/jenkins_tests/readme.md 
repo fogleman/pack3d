@@ -1,0 +1,22 @@
+## Jenkins Tests
+
+ 
+**Test 1**
+
+Single item.
+
+ <COMMAND TO RUN> `pack3d --json_file=tests/jenkins_tests/input_jenkins_test_1.json --filename=tests/jenkins_tests/output/output_jenkins_test_1` 
+
+Observation: Works well. will not exceed the frame.
+
+
+**Test 2**
+
+Three items, one co-packed.
+
+ <COMMAND TO RUN> `pack3d --json_file=tests/jenkins_tests/input_jenkins_test_2.json --filename=tests/jenkins_tests/output/output_jenkins_test_2` 
+
+Observation: Works well. will not exceed the frame.
+
+
+IMPORTANT: the output files also contain an associated STL file. The pack3d line (306) that produces that STL file is normally commented out, so the STL file will not be generated in production.
