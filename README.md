@@ -21,22 +21,15 @@ Output example:
    "spacing": 2,
    "items": [
       {
-         "filename": "./tests/coprint/Christmas_1.stl",
+         "filename": "./tests/coprint/mesh_1.stl",
          "count": 1,
          "copack": [
-            {
-               "filename": "./tests/coprint/Merry.stl",
-               "transformation": [
-                  [1, 0, 0, -60],
-                  [0, 1, 0, -343],
-                  [0, 0, 1, 0],
-                  [0, 0, 0, 1]
-               ]
-            }
+            {"filename": "./tests/coprint/mesh_2.stl"},
+            {"filename": "./tests/coprint/mesh_3.stl"}
          ]
       },
       {
-         "filename": "./tests/coprint/logo.stl",
+         "filename": "./tests/coprint/mesh_4.stl",
          "count": 1
       }
    ]
