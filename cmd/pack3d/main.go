@@ -58,6 +58,7 @@ func main() {
 
 	var (
 		singleStlSize []fauxgl.Vector
+		scaleStl      []fauxgl.Matrix
 	    done          func()
 	    totalVolume   float64
 		dimension     []float64
@@ -70,9 +71,14 @@ func main() {
 
 	model := pack3d.NewModel()
 	count := 1
+	scale := 1.0
+	scaleMatrix := fauxgl.Matrix{}
 	ok := false
 
 	// Loading build_volume size
+	// os.Args[1:3] --> build dimensions.
+	// os.Args[4]   --> minimum distance.
+	// os.Args[5]   --> output path.
 	for _, j := range os.Args[1:5]{
 		_dimension, err := strconv.ParseFloat(j, 64)
 		if err == nil{
@@ -87,13 +93,26 @@ func main() {
 	//fmt.Println(frameSize)
 
 	/* Loading stl models */
+	// os.Args[6], os.Args[6+3], ... --> objects counts.
+	// os.Args[7], os.Args[7+3], ... --> objects scales.
+	// os.Args[8], os.Args[8+3], ... --> objects filenames/path.
 	for _, arg := range os.Args[6:] {
+
+		// object's count.
 		_count, err := strconv.ParseInt(arg, 0, 0)
 		if err == nil {
 			count = int(_count)
 			continue
 		}
 
+		// object's scale.
+		_scale, err := strconv.ParseFloat(arg, 64)
+		if err == nil {
+			scale = float64(_scale)
+			continue
+		}
+
+		// object's filename.
 		done = timed(fmt.Sprintf("loading mesh %s", arg))
 		mesh, err := fauxgl.LoadMesh(arg)
 		if err != nil {
@@ -101,11 +120,18 @@ func main() {
 		}
 		done()
 
+		// Notice that the scaling is applied before the computation of the mesh's BoundingBox and volume.
+		done = timed("scaling mesh")
+		scaleMatrix = fauxgl.Scale(fauxgl.V(scale, scale, scale))
+		mesh.Transform(scaleMatrix)
+		done()
+
 		totalVolume += mesh.BoundingBox().Volume()
 		size := mesh.BoundingBox().Size()
 		for i:=0; i<count; i++{
 			singleStlSize = append(singleStlSize, size)
 			srcStlNames = append(srcStlNames, arg)
+			scaleStl = append(scaleStl, scaleMatrix)
 		}
 
 		fmt.Printf("  %d triangles\n", len(mesh.Triangles))
@@ -120,6 +146,8 @@ func main() {
 		model.Add(mesh, bvhDetail, count, spacing)
 		ok = true
 		done()
+
+		fmt.Println("______________________________________________________")
 	}
 
 	if !ok {
@@ -215,10 +243,11 @@ func main() {
 	transformation := success_model.Transformation()
 	for j:=0; j<len(success_model.Items); j++{
 		t := transformation[j]
+		st := t.Mul(scaleStl[j])  // scaled transformation for the j-th mesh.
 		fillVolumeWithSpacing = (singleStlSize[j].X + spacing) * (singleStlSize[j].Y + spacing) * (singleStlSize[j].Z + spacing)
 		if j<packItemNum {
 			totalFillVolume += fillVolumeWithSpacing
-			transMatrix = [4][4]float64{{t.X00, t.X01, t.X02, t.X03}, {t.X10, t.X11, t.X12, t.X13}, {t.X20, t.X21, t.X22, t.X23}, {t.X30, t.X31, t.X32, t.X33}}
+			transMatrix = [4][4]float64{{st.X00, st.X01, st.X02, st.X03}, {st.X10, st.X11, st.X12, st.X13}, {st.X20, st.X21, st.X22, st.X23}, {st.X30, st.X31, st.X32, st.X33}}
 		}else{
 			transMatrix = [4][4]float64{{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
 		}
@@ -237,7 +266,7 @@ func main() {
 
 	//TODO: Unblock the following line if want to generate the packing STL
 	/*
-		model.Mesh().SaveSTL(fmt.Sprintf("pack3d-%s.stl", os.Args[5]))
+		model.Mesh().SaveSTL(fmt.Sprintf("%s.stl", os.Args[5]))
 		model.TreeMesh().SaveSTL(fmt.Sprintf("out%dtree.stl", int(score*100000)))
 	*/
 	done()
