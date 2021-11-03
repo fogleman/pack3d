@@ -65,6 +65,7 @@ func main() {
 		Filename          string
 		Transformation    [4][4]float64
 		VolumeWithSpacing float64
+		scale             float64
 	}
 
 	type err_msg struct {
@@ -73,6 +74,7 @@ func main() {
 
 	var (
 		singleStlSize []fauxgl.Vector
+		scaleStl      []fauxgl.Matrix
 		done          func()
 		totalVolume   float64
 		ntime         int
@@ -83,33 +85,53 @@ func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
 
 	model := pack3d.NewModel()
+	scale := 1.0
+	scaleMatrix := fauxgl.Matrix{}
 	ok := false
 
 	spacing := config.Spacing / 2.0
+
 	// frameSize is the vertex in the first quadrant
 	frameSize := fauxgl.V(config.BuildVolume[0]/2.0, config.BuildVolume[1]/2.0, config.BuildVolume[2]/2.0)
 	buildVolume := config.BuildVolume[0] * config.BuildVolume[1] * config.BuildVolume[2]
 	//fmt.Println(frameSize)
 
 	/* Loading stl models */
-	coPackMap := make(map[string][]*Copack)
+	coPackMap := make(map[string][]*Copack)  // object to record co-packed meshes.
 	for _, item := range config.Items {
-		done = timed(fmt.Sprintf("loading mesh %s", item.Filename))
+
 		var mesh *fauxgl.Mesh
 		var err error
+
 		if item.Copack == nil {
+
+			done = timed(fmt.Sprintf("loading mesh %s", item.Filename))
 			mesh, err = fauxgl.LoadMesh(item.Filename)
 			if err != nil {
 				panic(err)
 			}
-
 			done()
 
-			totalVolume += mesh.BoundingBox().Volume()
+			// Mesh's scaling. If scaling is to be applied, it is
+			// done before the computation of the BoundingBox and volume.
+			_scale, err := strconv.ParseFloat(item.Scale, 64)
+			if err == nil {
+				scale = float64(_scale)
+				continue
+			}
+			scaleMatrix = fauxgl.Scale(fauxgl.V(scale, scale, scale))
+			if scale != 1.0 {
+				done = timed("scaling mesh")
+				mesh.Transform(scaleMatrix)
+				done()
+			}
+
+			// update arrays.
 			size := mesh.BoundingBox().Size()
 			for i := 0; i < item.Count; i++ {
 				singleStlSize = append(singleStlSize, size)
 				srcStlNames = append(srcStlNames, item.Filename)
+				scaleStl = append(scaleStl, scaleMatrix)
 			}
 
 			fmt.Printf("  %d triangles\n", len(mesh.Triangles))
@@ -118,35 +140,73 @@ func main() {
 			done = timed("centering mesh")
 			mesh.Center()
 			done()
+
+			totalVolume += mesh.BoundingBox().Volume()
+
 		} else {
+
 			coPackMap[item.Filename] = item.Copack
+
+			// load and scale the main co-packing mesh.
+			done = timed(fmt.Sprintf("loading main co-packing mesh %s", item.Filename))
 			mesh, err = fauxgl.LoadMesh(item.Filename)
 			if err != nil {
 				panic(err)
 			}
+			done()
+
+			// main co-packing mesh's scaling. If scaling is to be applied, it is
+			// done before the computation of the BoundingBox and volume.
+			_scale, err := strconv.ParseFloat(item.Scale, 64)
+			if err == nil {
+				scale = float64(_scale)
+				continue
+			}
+			scaleMatrix = fauxgl.Scale(fauxgl.V(scale, scale, scale))
+			if scale != 1.0 {
+				done = timed("scaling main co-packing mesh")
+				mesh.Transform(scaleMatrix)
+				done()
+			}
+
+			// load and scale the co-packed meshes.
 			for _, cp := range item.Copack {
+
+				done = timed(fmt.Sprintf("loading co-packed mesh %s", .Filename))
 				coMesh, err := fauxgl.LoadMesh(cp.Filename)
 				if err != nil {
 					panic(err)
 				}
+				done()
 
+				// IMPORTANT: cp.Scale is ignored. The main co-packing
+				// mesh's scale is applied to all of its co-packed objects.
+				if scale != 1.0 {
+					done = timed("scaling main co-packing mesh")
+					coMesh.Transform(scaleMatrix)
+					done()
+				}
+
+				// add coMesh to the main mesh.
 				mesh.Add(coMesh)
 			}
-			done()
 
-			totalVolume += mesh.BoundingBox().Volume()
+			// update arrays with the main co-packing mesh's data for the json output.
 			size := mesh.BoundingBox().Size()
 			for i := 0; i < item.Count; i++ {
 				singleStlSize = append(singleStlSize, size)
 				srcStlNames = append(srcStlNames, item.Filename)
+				scaleStl = append(scaleStl, scaleMatrix)
 			}
 
 			fmt.Printf("  %d triangles\n", len(mesh.Triangles))
 			fmt.Printf("  %g x %g x %g\n", size.X, size.Y, size.Z)
 
-			done = timed("centering mesh")
+			done = timed("centering co-packed mesh")
 			mesh.Center()
 			done()
+
+			totalVolume += mesh.BoundingBox().Volume()
 		}
 
 		done = timed("building bvh tree")
@@ -154,8 +214,15 @@ func main() {
 		model.Add(mesh, bvhDetail, item.Count, spacing)
 		ok = true
 		done()
+
+		fmt.Println("______________________________________________________")
 	}
 
+
+
+
+
+	// change usage below!!!
 	if !ok {
 		fmt.Println("Usage: pack3d frame_size output_fname N1 mesh1.stl N2 mesh2.stl ...")
 		fmt.Println(" - Packs N copies of each mesh into as small of a volume as possible.")
@@ -163,6 +230,9 @@ func main() {
 		fmt.Println(" - Results are written to disk whenever a new best is found.")
 		return
 	}
+
+
+
 
 	side := math.Pow(totalVolume, 1.0/3)
 	model.Deviation = side / 32 //it is not the distance between objects. And it seems that it will not reflect the distance.
@@ -257,20 +327,24 @@ func main() {
 	for j := 0; j < len(success_model.Items); j++ {
 		copack, ok := coPackMap[srcStlNames[j]]
 		if !ok {
+
 			t := transformation[j]
+			st := t.Mul(scaleStl[j])  // scaled transformation for the j-th mesh.
 			fillVolumeWithSpacing = (singleStlSize[j].X + spacing) * (singleStlSize[j].Y + spacing) * (singleStlSize[j].Z + spacing)
 			if j < packItemNum {
 				totalFillVolume += fillVolumeWithSpacing
-				transMatrix = [4][4]float64{{t.X00, t.X01, t.X02, t.X03}, {t.X10, t.X11, t.X12, t.X13}, {t.X20, t.X21, t.X22, t.X23}, {t.X30, t.X31, t.X32, t.X33}}
+				transMatrix = [4][4]float64{{st.X00, st.X01, st.X02, st.X03}, {st.X10, st.X11, st.X12, st.X13}, {st.X20, st.X21, st.X22, st.X23}, {st.X30, st.X31, st.X32, st.X33}}
 			} else {
 				transMatrix = [4][4]float64{{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
 			}
 			// It's actually the bounding box filling percentage
 			fillPercentage = totalFillVolume / buildVolume
 			transMaps = append(transMaps, TransMap{srcStlNames[j], transMatrix, fillVolumeWithSpacing})
+
 		} else {
-			// step 1.
+			
 			t := transformation[j]
+			st := t.Mul(scaleStl[j])  // scaled transformation for the j-th mesh.
 			fillVolumeWithSpacing = (singleStlSize[j].X + spacing) * (singleStlSize[j].Y + spacing) * (singleStlSize[j].Z + spacing)
 			if j < packItemNum {
 				totalFillVolume += fillVolumeWithSpacing
@@ -283,9 +357,11 @@ func main() {
 			// transMaps = append(transMaps, TransMap{srcStlNames[j], transMatrix, fillVolumeWithSpacing})
 
 			transMatrix = [4][4]float64{{t.X00, t.X01, t.X02, t.X03}, {t.X10, t.X11, t.X12, t.X13}, {t.X20, t.X21, t.X22, t.X23}, {t.X30, t.X31, t.X32, t.X33}}
+
+			// Add the main co-packing mesh.
 			transMaps = append(transMaps, TransMap{srcStlNames[j], transMatrix, fillVolumeWithSpacing})
 
-			// step 2.
+			// Add the co-packed meshes.
 			for _, cp := range copack {
 				// IMPORTANT: The volume of a co-packed object is already included in the volume
 				//            of the parent object and the co-packed object's volume is set to 0.
