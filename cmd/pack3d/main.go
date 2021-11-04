@@ -1,7 +1,9 @@
 /*
-Instruction: write down this into the command line to use the software
-<pack3d --json_file=json_config_file --filename=export_filename>
-For example: <pack3d --json_file=input.json>
+Instruction: write down this into the command line to use the software.
+
+<pack3d --input_config_json_filename=json_config_file --output_packing_json_filename=export_filename>
+For example: <pack3d --input_config_json_filename=input.json>
+
 The frame and spacing's units, in the json file, are in millimeters.
 */
 
@@ -39,8 +41,8 @@ func timed(name string) func() {
 }
 
 func main() {
-	var jsonFileArg = flag.String("json_file", "", "json config file")
-	var fileNameArg = flag.String("filename", "pack3d", "export filename")
+	var jsonFileArg = flag.String("input_config_json_filename", "", "json config file")
+	var fileNameArg = flag.String("output_packing_json_filename", "pack3d", "export filename")
 	flag.Parse()
 
 	if os.Args[1] == "--version" {
@@ -65,7 +67,6 @@ func main() {
 		Filename          string
 		Transformation    [4][4]float64
 		VolumeWithSpacing float64
-		scale             float64
 	}
 
 	type err_msg struct {
@@ -114,11 +115,7 @@ func main() {
 
 			// Mesh's scaling. If scaling is to be applied, it is
 			// done before the computation of the BoundingBox and volume.
-			_scale, err := strconv.ParseFloat(item.Scale, 64)
-			if err == nil {
-				scale = float64(_scale)
-				continue
-			}
+			scale = item.Scale
 			scaleMatrix = fauxgl.Scale(fauxgl.V(scale, scale, scale))
 			if scale != 1.0 {
 				done = timed("scaling mesh")
@@ -157,11 +154,7 @@ func main() {
 
 			// main co-packing mesh's scaling. If scaling is to be applied, it is
 			// done before the computation of the BoundingBox and volume.
-			_scale, err := strconv.ParseFloat(item.Scale, 64)
-			if err == nil {
-				scale = float64(_scale)
-				continue
-			}
+			scale = item.Scale
 			scaleMatrix = fauxgl.Scale(fauxgl.V(scale, scale, scale))
 			if scale != 1.0 {
 				done = timed("scaling main co-packing mesh")
@@ -172,7 +165,7 @@ func main() {
 			// load and scale the co-packed meshes.
 			for _, cp := range item.Copack {
 
-				done = timed(fmt.Sprintf("loading co-packed mesh %s", .Filename))
+				done = timed(fmt.Sprintf("loading co-packed mesh %s", cp.Filename))
 				coMesh, err := fauxgl.LoadMesh(cp.Filename)
 				if err != nil {
 					panic(err)
@@ -218,21 +211,13 @@ func main() {
 		fmt.Println("______________________________________________________")
 	}
 
-
-
-
-
-	// change usage below!!!
 	if !ok {
-		fmt.Println("Usage: pack3d frame_size output_fname N1 mesh1.stl N2 mesh2.stl ...")
+		fmt.Println("Usage: pack3d --input_config_json_filename==mesh_config.json --output_packing_json_filename=export.json")
 		fmt.Println(" - Packs N copies of each mesh into as small of a volume as possible.")
 		fmt.Println(" - Runs forever, looking for the best packing.")
 		fmt.Println(" - Results are written to disk whenever a new best is found.")
 		return
 	}
-
-
-
 
 	side := math.Pow(totalVolume, 1.0/3)
 	model.Deviation = side / 32 //it is not the distance between objects. And it seems that it will not reflect the distance.
@@ -337,8 +322,10 @@ func main() {
 			} else {
 				transMatrix = [4][4]float64{{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
 			}
-			// It's actually the bounding box filling percentage
+
+			// buildVolume's filling percentage.
 			fillPercentage = totalFillVolume / buildVolume
+
 			transMaps = append(transMaps, TransMap{srcStlNames[j], transMatrix, fillVolumeWithSpacing})
 
 		} else {
@@ -348,20 +335,18 @@ func main() {
 			fillVolumeWithSpacing = (singleStlSize[j].X + spacing) * (singleStlSize[j].Y + spacing) * (singleStlSize[j].Z + spacing)
 			if j < packItemNum {
 				totalFillVolume += fillVolumeWithSpacing
-				transMatrix = [4][4]float64{{t.X00, t.X01, t.X02, t.X03}, {t.X10, t.X11, t.X12, t.X13}, {t.X20, t.X21, t.X22, t.X23}, {t.X30, t.X31, t.X32, t.X33}}
+				transMatrix = [4][4]float64{{st.X00, st.X01, st.X02, st.X03}, {st.X10, st.X11, st.X12, st.X13}, {st.X20, st.X21, st.X22, st.X23}, {st.X30, st.X31, st.X32, st.X33}}
 			} else {
 				transMatrix = [4][4]float64{{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
 			}
-			// It's actually the bounding box filling percentage
+
+			// buildVolume's filling percentage.
 			fillPercentage = totalFillVolume / buildVolume
-			// transMaps = append(transMaps, TransMap{srcStlNames[j], transMatrix, fillVolumeWithSpacing})
 
-			transMatrix = [4][4]float64{{t.X00, t.X01, t.X02, t.X03}, {t.X10, t.X11, t.X12, t.X13}, {t.X20, t.X21, t.X22, t.X23}, {t.X30, t.X31, t.X32, t.X33}}
-
-			// Add the main co-packing mesh.
+			// Add the main co-packing mesh to transMaps.
 			transMaps = append(transMaps, TransMap{srcStlNames[j], transMatrix, fillVolumeWithSpacing})
 
-			// Add the co-packed meshes.
+			// Add the co-packed meshes to transMaps.
 			for _, cp := range copack {
 				// IMPORTANT: The volume of a co-packed object is already included in the volume
 				//            of the parent object and the co-packed object's volume is set to 0.
@@ -389,6 +374,7 @@ type Config struct {
 	Spacing     float64    `json:"spacing"`
 	Items       []struct {
 		Filename string    `json:"filename"`
+		Scale    float64   `json:"scale"`
 		Count    int       `json:"count"`
 		Copack   []*Copack `json:"copack,omitempty"`
 	} `json:"items"`
@@ -396,5 +382,6 @@ type Config struct {
 
 type Copack struct {
 	Filename     string    `json:"filename"`
+	// Scale        float64   `json:"scale"`
 	// Transformation [4][4]float64 `json:"transformation"`  // ch32838 initially required this field then the requirements changed.
 }
