@@ -10,10 +10,12 @@ Pack3d is written in golang and the installation instructions can be found in th
 ### Example
 
 ```
-pack3d --json_file=input.json --filename=output
+pack3d --input_config_json_filename=input.json --output_packing_json_filename=output
 ```
 
-Output example:
+Notice the absence of the extension of the `output` file. This is because an `stl` file could optionally also be written as output.
+
+Input example:
 
 ```
 {
@@ -22,7 +24,8 @@ Output example:
    "items": [
       {
          "filename": "./tests/coprint/mesh_1.stl",
-         "count": 1,
+         "count": 2,
+         "scale": 1.0,
          "copack": [
             {"filename": "./tests/coprint/mesh_2.stl"},
             {"filename": "./tests/coprint/mesh_3.stl"}
@@ -30,8 +33,38 @@ Output example:
       },
       {
          "filename": "./tests/coprint/mesh_4.stl",
-         "count": 1
+         "count": 2,
+         "scale": 1.0,
       }
    ]
 }
+```
+
+Output example (unrelated to the input example):
+
+```
+[
+    {
+        "Filename": "object1.stl",
+        "Transformation":
+        [
+            [0, 0, -1, 0],
+            [0, 1,  0, 0],
+            [1, 0,  0, 0],
+            [0, 0,  0, 1]
+        ],
+        "VolumeWithSpacing": 587.9278614633075
+    }
+    {
+        "Filename": "object2.stl",
+        "Transformation":
+        [
+            [0, 2, 0, -9.44458711204719],
+            [0, 0, 2, -8.621629171058217],
+            [2, 0, 0,  1.1454025845357874],
+            [0, 0, 0,  1]
+        ],
+        "VolumeWithSpacing": 3908.6121061115296
+    }
+]
 ```

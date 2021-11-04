@@ -5,6 +5,7 @@
         {
             "filename": "./tests/ch32838_test/vertical_solid_arrow.stl",
             "count": 14,
+            "scale": 1.0,
             "copack": [
                 {
                     "filename": "./tests/ch32838_test/arrow-minted_cuboid.stl"
@@ -16,11 +17,13 @@
         },
         {
             "filename": "./tests/ch32838_test/logo.stl",
-            "count": 21
+            "count": 21,
+            "scale": 1.0
         },
         {
             "filename": "./tests/ch32838_test/arrow-minted_cuboid.stl",
             "count": 10,
+            "scale": 1.0,
             "copack": [
                 {
                     "filename": "./tests/ch32838_test/vertical_solid_arrow.stl"

@@ -4,7 +4,8 @@
     "items": [
         {
             "filename": "tests/jenkins_tests/logo.stl",
-            "count": 1
+            "count": 1,
+            "scale": 1.0
         }
     ]
 }
