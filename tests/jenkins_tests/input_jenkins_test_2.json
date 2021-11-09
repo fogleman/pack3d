@@ -1,5 +1,5 @@
 {
-    "build_volume": [100, 100, 100],
+    "build_volume": [120, 120, 120],
     "spacing": 5,
     "items": [
         {
