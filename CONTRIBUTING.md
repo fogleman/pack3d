@@ -39,10 +39,10 @@ go get; go install
 
 Bin file is run using, where frame_x, frame_y, frame_z are the build_crate size.
 ```
-pack3d --json_file=input.json --filename=output
+pack3d --input_config_json_filename=tests/ch32838_test/input.json --output_packing_json_filename=tests/ch32838_test/output/output
 ```
 
-See folder tests/ch32838_test for an example.
+See folder tests/ch32838_test for an example or the folder tests/jenkins_tests.
 
 NB: Nautilus can only use a binary file built on a linux machine and not from macOS.
 
@@ -86,7 +86,9 @@ The output.json file contains a list of dictionaries - just one item was added (
 ]
 ```
 
-The numbers, expressed in scientific notation, have been shortened for visualisation purposes. The Transformation's value represents an affine transformation (for homogeneous coordinates). The VolumeWithSpacing's value is the minimum distance between two items in the built-volumn.
+The numbers, expressed in scientific notation, have been shortened for visualisation purposes. The very small numbers 6.123E-17 and 3.749E-33 can be safely approximated with 0.
+
+The Transformation's value represents an affine transformation (for homogeneous coordinates). The VolumeWithSpacing's value is the minimum distance between two items in the built-volumn.
 
 ### pack3d/model.go
 
