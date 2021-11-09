@@ -1,10 +1,10 @@
 {
-    "build_volume": [20, 50, 50],
-    "spacing": 2,
+    "build_volume": [100, 100, 100],
+    "spacing": 5,
     "items": [
         {
             "filename": "tests/jenkins_tests/logo.stl",
-            "count": 2,
+            "count": 3,
             "scale": 1.0,
             "copack": [
                 {
@@ -25,7 +25,12 @@
         {
             "filename": "tests/jenkins_tests/cube.stl",
             "count": 2,
-            "scale": 3.0
+            "scale": 4.0
+        },
+        {
+            "filename": "tests/jenkins_tests/cube.stl",
+            "count": 5,
+            "scale": 1.0
         }
     ]
 }
