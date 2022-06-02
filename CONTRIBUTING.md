@@ -1,56 +1,68 @@
 # pack3d - Installation, Codebase and Development
 
 
-## 1. Installation (macOS users)
+## 1. Go Development Setup (macOS - Homebrew)
 
-First, install Go, set your GOPATH, and make sure $GOPATH/bin is on your PATH.
+The `go` folder in the home folder is to contain the projects' source code and bin/exec files.
+
+```
+export GOPATH="${HOME}/go"
+export GOROOT="$(brew --prefix golang)/libexec"
+export PATH="$PATH:${GOPATH}/bin:${GOROOT}/bin"
+test -d "${GOPATH}" || mkdir "${GOPATH}"
+test -d "${GOPATH}/src/github.com" || mkdir -p "${GOPATH}/src/github.com"
+```
 
 ```
 brew install go
-
-mkdir ~/go
-export GOPATH="$HOME/go"
-export PATH="$PATH:$GOPATH/bin"
-export GOBIN=$GOPATH/bin
 ```
 
-Then go to the src folder and do:
+The installed version of `go` is assumed to be 1.16+ in macOS:
 
 ```
+go env -w GO111MODULE=auto  # necessary for go 1.16+ to use the legacy `go get` incantation.
+```
+
+Retrieve the `fogleman/fauxgl` code necessary for 3d renders within pack3d.
+Unused in Nautilus at the moment of writing this doc but a necessary dependency of pack3d.
+
+```
+cd go/src
 go get github.com/fogleman/fauxgl
 ```
 
-Clone the Authentise/pack3d repository into your ```go/src``` folder.
+Clone the Authentise/pack3d repository into your `go/src` folder.
+
 ```
 git clone git@github.com:Authentise/pack3d.git
 ```
 
-cd into the pack3d folder:
+Install pack3d.
+
 ```
+cd pack3d
 cd cmd/pack3d
 go get; go install
 ```
 
-Now, cd ../.. directory,
 ```
+cd ../..
 cd cmd/binpack
 go get; go install
 ```
 
-Bin file is run using, where frame_x, frame_y, frame_z are the build_crate size.
+Bin file is run using the following (example) line:
 ```
 pack3d --input_config_json_filename=tests/ch32838_test/input.json --output_packing_json_filename=tests/ch32838_test/output/output
 ```
 
-See folder tests/ch32838_test for an example or the folder tests/jenkins_tests.
+See folder tests/ch32838_test for an example or the folder tests/jenkins_tests in Nautilus.
 
 NB: Nautilus can only use a binary file built on a linux machine and not from macOS.
 
 
 
-## 2. Codebase
-
-What follows below is a quick peek into a few important files:
+## 2. Quick glance at the pack3d codebase
 
 ### cmd/pack3d/main.go
 ```go/src/github.com/pack3d/cmd/pack3d/main.go```
