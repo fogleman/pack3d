@@ -1,7 +1,90 @@
-# pack3d - Installation, Codebase and Development
+# pack3d - Installation, Codebase, Development and Deployment
 
+The Go Development can be carried out straight into the Nautilus container, same as for the Python development. There are a few ways to compile/run that Go code: 1. set up the Go dev environment in the Nautilus docker container (Ubuntu). 2. Set up macOS.
 
-## 1. Go Development Setup (macOS - Homebrew)
+The first option is probably preferable since the deployment of executable code will then need to go through the first step anyway, but someone might find it helpful to develop in macOS.
+
+## 1. Go Development Setup (Ubuntu 18.04.6 LTS - using `fish`)
+
+(TODO: the addition of Go-related env vars would be nice to avoid long paths.)
+
+Start off `fish` in the Nautilus docker container.
+
+Install golang (go1.16.6.linux-amd64.tar.gz is 123.07MB)
+
+```
+wget https://golang.org/dl/go1.16.6.linux-amd64.tar.gz
+```
+
+Untarring might take a few minutes.
+The untarred ./go folder is about 395MB.
+
+```
+tar -C /src -xzf go1.16.6.linux-amd64.tar.gz
+```
+
+The tar file can be removed, also check the version of the Go compiler.
+
+```
+rm go1.16.6.linux-amd64.tar.gz
+/src/go/bin/go version
+```
+
+This should return the line below:
+
+`go version go1.16.6 linux/amd64`
+
+Get the necessary repos from github:
+
+```
+cd go/src
+/src/go/bin/go get github.com/fogleman/fauxgl
+```
+
+clone the pack3d codebase (do this in macOS's iTerm so you can clone pack3d using the github tokens):
+
+```
+cd ./Authentise/nautilus/go/src
+git clone git@github.com:Authentise/pack3d.git
+```
+
+back in fish:
+
+```
+/src/go/bin/go mod vendor
+```
+
+### Compile Go code:
+
+```
+cd /src/go/src/pack3d
+
+cd cmd/pack3d
+/src/go/bin/go get     # ignore this line if it errs!
+/src/go/bin/go install
+
+cd ../binpack/
+/src/go/bin/go get
+/src/go/bin/go install
+```
+
+Now, the (compiled) executable of `pack3d` is available in the `/src/go/bin/`.
+
+### Manual testing of Go code:
+
+Co-packing tests. These ones might quickly become obsolete as newer pack3d features are added in.
+
+```
+cd /src/go/src/pack3d
+```
+
+`/src/go/bin/pack3d --input_config_json_filename=tests/jenkins_tests/input_jenkins_test_1.json --output_packing_json_filename=tests/jenkins_tests/output_jenkins_test_1`
+
+`/src/go/bin/pack3d --input_config_json_filename=tests/jenkins_tests/input_jenkins_test_2.json --output_packing_json_filename=tests/jenkins_tests/output_jenkins_test_2`
+
+---
+
+## 2. Go Development Setup (macOS - Homebrew) [OPTIONAL]
 
 The `go` folder in the home folder is to contain the projects' source code and bin/exec files.
 
@@ -53,17 +136,15 @@ go get; go install
 
 pack3d can be invoked directly from the command line now, see an example below here:
 
-```
-pack3d --input_config_json_filename=tests/ch32838_test/input.json --output_packing_json_filename=tests/ch32838_test/output/output
-```
+`pack3d --input_config_json_filename=tests/ch32838_test/input.json --output_packing_json_filename=tests/ch32838_test/output/output`
 
 See folder pack3d/tests/ch32838_test for an example of input files, or the folder pack3d/tests/jenkins_tests.
 
 NB: Nautilus can only use a binary file built on a linux machine and not from macOS. See 4. Deployment.
 
+---
 
-
-## 2. Quick glance at the pack3d codebase
+## 3. Quick glance at the pack3d codebase
 
 ### cmd/pack3d/main.go
 ```go/src/github.com/pack3d/cmd/pack3d/main.go```
@@ -121,10 +202,16 @@ The model class owns methods some of which have already been highlighted above, 
 |...|...|
 
 
-## 3. Development
+## 4. Development
 
 __WARNING__: After creating a PR, you can select which master (fogleman/master or Authentise/master) you want to merge into.
 
-## 4. Deployment
-
 TODO
+
+## 5. Deployment
+
+Pack3d build location
+
+`/src/go/bin/pack3d`
+
+This build needs to be copied into the Nautilus bin when deplyoing.
