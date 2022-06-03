@@ -23,16 +23,6 @@ Notice the absence of the extension of the `output` file. This is because an `st
         {
             "filename": "tests/jenkins_tests/logo.stl",
             "count": 3,
-            "scale": 1.0,
-            "copack": [
-                {
-                    "filename": "tests/jenkins_tests/corner.stl"
-                }
-            ]
-        },
-        {
-            "filename": "tests/jenkins_tests/logo.stl",
-            "count": 2,
             "scale": 2.0,
             "copack": [
                 {
@@ -68,82 +58,12 @@ Notice the absence of the extension of the `output` file. This is because an `st
     {
         "Filename": "tests/jenkins_tests/logo.stl",
         "Transformation": [
-            [ 0, 1,  0, -38.08436791719043],
-            [ 0, 0, -1, -3.36183820906897],
-            [-1, 0,  0,  31.10764712961166],
-            [ 0, 0,  0,  1]
-        ],
-        "VolumeWithSpacing": 964.5577062418419
-    },
-    {
-        "Filename": "tests/jenkins_tests/corner.stl",
-        "Transformation": [
-            [ 0, 1,  0, -38.08436791719043],
-            [ 0, 0, -1, -3.36183820906897],
-            [-1, 0, 0,   31.10764712961166],
-            [ 0, 0, 0, 1]
-        ],
-        "VolumeWithSpacing": 0
-    },
-    {
-        "Filename": "tests/jenkins_tests/logo.stl",
-        "Transformation": [
-            [-1,  0,  0, -35.064518578131974],
-            [ 0,  0, -1, -12.783828938245192],
-            [ 0, -1,  0, -24.15019322817524],
-            [ 0, 0, 0, 1]
-        ],
-        "VolumeWithSpacing": 964.5577062418419
-    },
-    {
-        "Filename": "tests/jenkins_tests/corner.stl",
-        "Transformation": [
-            [-1,  0,  0, -35.064518578131974],
-            [ 0,  0, -1, -12.783828938245192],
-            [ 0, -1,  0, -24.15019322817524],
-            [ 0, 0, 0, 1]
-        ],
-        "VolumeWithSpacing": 0
-    },
-    {
-        "Filename": "tests/jenkins_tests/logo.stl",
-        "Transformation": [
-            [ 0, 1, 0, -35.521257288959845],
-            [-1, 0, 0, -4.392353279184597],
-            [ 0, 0, 1, -9.788089697461157],
-            [ 0, 0, 0, 1]
-        ],
-        "VolumeWithSpacing": 964.5577062418419
-    },
-    {
-        "Filename": "tests/jenkins_tests/corner.stl",
-        "Transformation": [
-            [ 0, 1, 0, -35.521257288959845],
-            [-1, 0, 0, -4.392353279184597],
-            [ 0, 0, 1, -9.788089697461157],
-            [ 0, 0, 0, 1]
-        ],
-        "VolumeWithSpacing": 0
-    },
-    {
-        "Filename": "tests/jenkins_tests/logo.stl",
-        "Transformation": [
             [ 0, 0, -2, -36.092921290618406],
             [-2, 0,  0, -4.735731505145346],
             [ 0, 2,  0, 8.056191563929794],
             [ 0, 0, 0, 1]
         ],
         "VolumeWithSpacing": 5138.241184594143
-    },
-    {
-        "Filename": "tests/jenkins_tests/corner.stl",
-        "Transformation": [
-            [ 0, 0, -2, -36.092921290618406],
-            [-2, 0,  0, -4.735731505145346],
-            [ 0, 2,  0, 8.056191563929794],
-            [ 0, 0, 0, 1]
-        ],
-        "VolumeWithSpacing": 0
     },
     {
         "Filename": "tests/jenkins_tests/logo.stl",
@@ -154,16 +74,6 @@ Notice the absence of the extension of the `output` file. This is because an `st
             [ 0, 0, 0, 1]
         ],
         "VolumeWithSpacing": 5138.241184594143
-    },
-    {
-        "Filename": "tests/jenkins_tests/corner.stl",
-        "Transformation": [
-            [ 0, 0, 2, -36.09345621544282],
-            [ 2, 0, 0, -21.623185522659124],
-            [ 0, 2, 0, -8.785596546107582],
-            [ 0, 0, 0, 1]
-        ],
-        "VolumeWithSpacing": 0
     },
     {
         "Filename": "tests/jenkins_tests/cube.stl",
@@ -175,66 +85,10 @@ Notice the absence of the extension of the `output` file. This is because an `st
         ],
         "VolumeWithSpacing": 76765.625
     },
-    {
-        "Filename": "tests/jenkins_tests/cube.stl",
-        "Transformation": [
-            [ 0, 4, 0, -4.439858883393925],
-            [ 0, 0, 4, -11.646377522333808],
-            [ 4, 0, 0,  16.31737399791252],
-            [ 0, 0, 0, 1]
-        ],
-        "VolumeWithSpacing": 76765.625
-    },
-    {
-        "Filename": "tests/jenkins_tests/cube.stl",
-        "Transformation": [
-            [ 0, 1, 0, -37.593934442604954],
-            [ 0, 0, 1, -25.386707045922037],
-            [ 1, 0, 0, -36.10923395402634],
-            [ 0, 0, 0, 1]
-        ],
-        "VolumeWithSpacing": 1953.125
-    },
-    {
-        "Filename": "tests/jenkins_tests/cube.stl",
-        "Transformation": [
-            [ 0, 1, 0, -35.6471060803817],
-            [-1, 0, 0, -26.355432623379993],
-            [ 0, 0, 1,  13.959681356544618],
-            [ 0, 0, 0, 1]
-        ],
-        "VolumeWithSpacing": 1953.125
-    },
-    {
-        "Filename": "tests/jenkins_tests/cube.stl",
-        "Transformation": [
-            [ 0, -1, 0, -35.80311229074046],
-            [ 1,  0, 0, -3.854924315984657],
-            [ 0,  0, 1, -39.99880616458849],
-            [ 0, 0, 0, 1]
-        ],
-        "VolumeWithSpacing": 1953.125
-    },
-    {
-        "Filename": "tests/jenkins_tests/cube.stl",
-        "Transformation": [
-            [ 0, 0, -1, -35.48465191236189],
-            [ 0, 1,  0,  2.5540333920688214],
-            [ 1, 0,  0, -24.967430047438363],
-            [ 0, 0, 0, 1]
-        ],
-        "VolumeWithSpacing": 1953.125
-    },
-    {
-        "Filename": "tests/jenkins_tests/cube.stl",
-        "Transformation": [
-            [ 0,  0, 1, -37.2963545459397],
-            [ 0, -1, 0, -20.597736843343952],
-            [ 1,  0, 0,  30.034134932756594],
-            [ 0, 0, 0, 1]
-        ],
-        "VolumeWithSpacing": 1953.125
-    }
+    .
+    .
+    .
+    .
 ]
 ]
 ```
