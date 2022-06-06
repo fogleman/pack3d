@@ -1,0 +1,282 @@
+solid "arrow-minted_cuboid"
+  facet normal -1 0 0
+    outer loop
+      vertex 1 2 -1
+      vertex 1 -1 6.12323426293e-17
+      vertex 1 2 -1.22464685259e-16
+    endloop
+  endfacet
+  facet normal -1 -0 0
+    outer loop
+      vertex 1 -1 6.12323426293e-17
+      vertex 1 2 -1
+      vertex 1 -1 -1
+    endloop
+  endfacet
+  facet normal 0 0 -1
+    outer loop
+      vertex 1 2 -1.22464685259e-16
+      vertex 2 2 -1.22464685259e-16
+      vertex 1 2 -1
+    endloop
+  endfacet
+  facet normal 0 -0 -1
+    outer loop
+      vertex 2 2 -1.22464685259e-16
+      vertex 2 2 -1
+      vertex 1 2 -1
+    endloop
+  endfacet
+  facet normal -0.832050323486 0 0.554700195789
+    outer loop
+      vertex 0 5 -1
+      vertex 2 2 -1
+      vertex 2 2 -1.22464685259e-16
+    endloop
+  endfacet
+  facet normal -0.832050323486 0 0.554700195789
+    outer loop
+      vertex 0 5 -3.06161699911e-16
+      vertex 0 5 -1
+      vertex 2 2 -1.22464685259e-16
+    endloop
+  endfacet
+  facet normal 0.832050323486 0 0.554700195789
+    outer loop
+      vertex 0 5 -3.06161699911e-16
+      vertex -2 2 -1.22464685259e-16
+      vertex 0 5 -1
+    endloop
+  endfacet
+  facet normal 0.832050323486 0 0.554700195789
+    outer loop
+      vertex 0 5 -1
+      vertex -2 2 -1.22464685259e-16
+      vertex -2 2 -1
+    endloop
+  endfacet
+  facet normal 0 0 -1
+    outer loop
+      vertex -2 2 -1
+      vertex -2 2 -1.22464685259e-16
+      vertex -1 2 -1
+    endloop
+  endfacet
+  facet normal 0 0 -1
+    outer loop
+      vertex -1 2 -1
+      vertex -2 2 -1.22464685259e-16
+      vertex -1 2 -1.22464685259e-16
+    endloop
+  endfacet
+  facet normal 1 0 0
+    outer loop
+      vertex -1 2 -1
+      vertex -1 2 -1.22464685259e-16
+      vertex -1 -1 6.12323426293e-17
+    endloop
+  endfacet
+  facet normal 1 -0 0
+    outer loop
+      vertex -1 -1 -1
+      vertex -1 2 -1
+      vertex -1 -1 6.12323426293e-17
+    endloop
+  endfacet
+  facet normal 0 0 -1
+    outer loop
+      vertex -1 -1 6.12323426293e-17
+      vertex 1 -1 6.12323426293e-17
+      vertex -1 -1 -1
+    endloop
+  endfacet
+  facet normal 0 -0 -1
+    outer loop
+      vertex 1 -1 6.12323426293e-17
+      vertex 1 -1 -1
+      vertex -1 -1 -1
+    endloop
+  endfacet
+  facet normal -0 1 0
+    outer loop
+      vertex -1 -1 -1
+      vertex 1 -1 -1
+      vertex 1 2 -1
+    endloop
+  endfacet
+  facet normal 0 1 0
+    outer loop
+      vertex 1 2 -1
+      vertex -1 2 -1
+      vertex -1 -1 -1
+    endloop
+  endfacet
+  facet normal -0 1 0
+    outer loop
+      vertex -1 2 -1
+      vertex 1 2 -1
+      vertex 0 5 -1
+    endloop
+  endfacet
+  facet normal -0 1 0
+    outer loop
+      vertex 1 2 -1
+      vertex 2 2 -1
+      vertex 0 5 -1
+    endloop
+  endfacet
+  facet normal 0 1 0
+    outer loop
+      vertex 0 5 -1
+      vertex -2 2 -1
+      vertex -1 2 -1
+    endloop
+  endfacet
+  facet normal 0 1 -0
+    outer loop
+      vertex -1 -1 6.12323426293e-17
+      vertex -3 -2 1.22464685259e-16
+      vertex 3 -2 1.22464685259e-16
+    endloop
+  endfacet
+  facet normal 0 1 -0
+    outer loop
+      vertex 1 -1 6.12323426293e-17
+      vertex -1 -1 6.12323426293e-17
+      vertex 3 -2 1.22464685259e-16
+    endloop
+  endfacet
+  facet normal 0 1 -0
+    outer loop
+      vertex 2 2 -1.22464685259e-16
+      vertex 1 -1 6.12323426293e-17
+      vertex 3 -2 1.22464685259e-16
+    endloop
+  endfacet
+  facet normal 0 1 0
+    outer loop
+      vertex 2 2 -1.22464685259e-16
+      vertex 1 2 -1.22464685259e-16
+      vertex 1 -1 6.12323426293e-17
+    endloop
+  endfacet
+  facet normal 0 1 -0
+    outer loop
+      vertex 3 6 -3.67394029306e-16
+      vertex 2 2 -1.22464685259e-16
+      vertex 3 -2 1.22464685259e-16
+    endloop
+  endfacet
+  facet normal 0 1 0
+    outer loop
+      vertex 3 6 -3.67394029306e-16
+      vertex 0 5 -3.06161699911e-16
+      vertex 2 2 -1.22464685259e-16
+    endloop
+  endfacet
+  facet normal 0 1 0
+    outer loop
+      vertex 0 5 -3.06161699911e-16
+      vertex 3 6 -3.67394029306e-16
+      vertex -3 6 -3.67394029306e-16
+    endloop
+  endfacet
+  facet normal 0 1 0
+    outer loop
+      vertex -3 6 -3.67394029306e-16
+      vertex -2 2 -1.22464685259e-16
+      vertex 0 5 -3.06161699911e-16
+    endloop
+  endfacet
+  facet normal 0 1 0
+    outer loop
+      vertex -2 2 -1.22464685259e-16
+      vertex -3 6 -3.67394029306e-16
+      vertex -3 -2 1.22464685259e-16
+    endloop
+  endfacet
+  facet normal 0 1 -0
+    outer loop
+      vertex -2 2 -1.22464685259e-16
+      vertex -3 -2 1.22464685259e-16
+      vertex -1 -1 6.12323426293e-17
+    endloop
+  endfacet
+  facet normal 0 1 -0
+    outer loop
+      vertex -1 2 -1.22464685259e-16
+      vertex -2 2 -1.22464685259e-16
+      vertex -1 -1 6.12323426293e-17
+    endloop
+  endfacet
+  facet normal -1 -0 -0
+    outer loop
+      vertex -3 -2 1.22464685259e-16
+      vertex -3 6 -3.67394029306e-16
+      vertex -3 -2 -2
+    endloop
+  endfacet
+  facet normal -1 0 0
+    outer loop
+      vertex -3 -2 -2
+      vertex -3 6 -3.67394029306e-16
+      vertex -3 6 -2
+    endloop
+  endfacet
+  facet normal 0 0 -1
+    outer loop
+      vertex -3 6 -2
+      vertex -3 6 -3.67394029306e-16
+      vertex 3 6 -2
+    endloop
+  endfacet
+  facet normal 0 0 -1
+    outer loop
+      vertex 3 6 -2
+      vertex -3 6 -3.67394029306e-16
+      vertex 3 6 -3.67394029306e-16
+    endloop
+  endfacet
+  facet normal 1 0 0
+    outer loop
+      vertex 3 6 -2
+      vertex 3 6 -3.67394029306e-16
+      vertex 3 -2 -2
+    endloop
+  endfacet
+  facet normal 1 -0 0
+    outer loop
+      vertex 3 -2 -2
+      vertex 3 6 -3.67394029306e-16
+      vertex 3 -2 1.22464685259e-16
+    endloop
+  endfacet
+  facet normal 0 0 1
+    outer loop
+      vertex 3 -2 1.22464685259e-16
+      vertex -3 -2 1.22464685259e-16
+      vertex 3 -2 -2
+    endloop
+  endfacet
+  facet normal 0 0 1
+    outer loop
+      vertex -3 -2 1.22464685259e-16
+      vertex -3 -2 -2
+      vertex 3 -2 -2
+    endloop
+  endfacet
+  facet normal 0 -1 0
+    outer loop
+      vertex -3 -2 -2
+      vertex 3 6 -2
+      vertex 3 -2 -2
+    endloop
+  endfacet
+  facet normal 0 -1 0
+    outer loop
+      vertex -3 -2 -2
+      vertex -3 6 -2
+      vertex 3 6 -2
+    endloop
+  endfacet
+endsolid "arrow-minted_cuboid"

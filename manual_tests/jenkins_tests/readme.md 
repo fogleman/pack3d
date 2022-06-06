@@ -1,0 +1,22 @@
+## Jenkins Tests
+
+ 
+**Test 1**
+
+Single item.
+
+ <COMMAND TO RUN> `pack3d --input_config_json_filename=tests/jenkins_tests/input_jenkins_test_1.json --output_packing_json_filename=tests/jenkins_tests/output_jenkins_test_1` 
+
+Observation: Works well. will not exceed the build volume.
+
+
+**Test 2**
+
+Three items, one co-packed.
+
+ <COMMAND TO RUN> `pack3d --input_config_json_filename=tests/jenkins_tests/input_jenkins_test_2.json --output_packing_json_filename=tests/jenkins_tests/output_jenkins_test_2` 
+
+Observation: Works well. will not exceed the build volume.
+
+
+IMPORTANT: the output files also contain an associated STL file. The pack3d line (367) that produces that STL file is normally commented out, so the STL file will not be generated in production.

@@ -1,0 +1,170 @@
+solid "vertical_solid_arrow__translated"
+  facet normal 0 1 0
+    outer loop
+      vertex 1 6 -1
+      vertex 1 9 -1
+      vertex -1 6 -1
+    endloop
+  endfacet
+  facet normal 0 1 0
+    outer loop
+      vertex -1 6 -1
+      vertex 1 9 -1
+      vertex -1 9 -1
+    endloop
+  endfacet
+  facet normal 0 1 -0
+    outer loop
+      vertex 0 12 -1
+      vertex -1 9 -1
+      vertex 1 9 -1
+    endloop
+  endfacet
+  facet normal 0 1 0
+    outer loop
+      vertex 2 9 -1
+      vertex 0 12 -1
+      vertex 1 9 -1
+    endloop
+  endfacet
+  facet normal 0 1 0
+    outer loop
+      vertex -1 9 -1
+      vertex 0 12 -1
+      vertex -2 9 -1
+    endloop
+  endfacet
+  facet normal 1 0 0
+    outer loop
+      vertex 1 9 -2
+      vertex 1 9 -1
+      vertex 1 6 -1
+    endloop
+  endfacet
+  facet normal 1 0 0
+    outer loop
+      vertex 1 6 -1
+      vertex 1 6 -2
+      vertex 1 9 -2
+    endloop
+  endfacet
+  facet normal -0 0 1
+    outer loop
+      vertex 1 9 -1
+      vertex 1 9 -2
+      vertex 2 9 -1
+    endloop
+  endfacet
+  facet normal 0 0 1
+    outer loop
+      vertex 2 9 -1
+      vertex 1 9 -2
+      vertex 2 9 -2
+    endloop
+  endfacet
+  facet normal 0.832050263882 -2.07703701853e-16 -0.554700195789
+    outer loop
+      vertex 0 12 -2
+      vertex 2 9 -1
+      vertex 2 9 -2
+    endloop
+  endfacet
+  facet normal 0.832050263882 0 -0.554700195789
+    outer loop
+      vertex 0 12 -1
+      vertex 2 9 -1
+      vertex 0 12 -2
+    endloop
+  endfacet
+  facet normal -0.832050263882 -0 -0.554700195789
+    outer loop
+      vertex 0 12 -1
+      vertex 0 12 -2
+      vertex -2 9 -1
+    endloop
+  endfacet
+  facet normal -0.832050263882 -2.07703701853e-16 -0.554700195789
+    outer loop
+      vertex 0 12 -2
+      vertex -2 9 -2
+      vertex -2 9 -1
+    endloop
+  endfacet
+  facet normal 0 0 1
+    outer loop
+      vertex -2 9 -2
+      vertex -1 9 -2
+      vertex -2 9 -1
+    endloop
+  endfacet
+  facet normal 0 -0 1
+    outer loop
+      vertex -1 9 -2
+      vertex -1 9 -1
+      vertex -2 9 -1
+    endloop
+  endfacet
+  facet normal -1 0 0
+    outer loop
+      vertex -1 9 -2
+      vertex -1 6 -1
+      vertex -1 9 -1
+    endloop
+  endfacet
+  facet normal -1 0 0
+    outer loop
+      vertex -1 6 -2
+      vertex -1 6 -1
+      vertex -1 9 -2
+    endloop
+  endfacet
+  facet normal -0 0 1
+    outer loop
+      vertex -1 6 -1
+      vertex -1 6 -2
+      vertex 1 6 -1
+    endloop
+  endfacet
+  facet normal 0 0 1
+    outer loop
+      vertex 1 6 -1
+      vertex -1 6 -2
+      vertex 1 6 -2
+    endloop
+  endfacet
+  facet normal 0 -1 0
+    outer loop
+      vertex -1 6 -2
+      vertex 1 9 -2
+      vertex 1 6 -2
+    endloop
+  endfacet
+  facet normal 0 -1 0
+    outer loop
+      vertex 1 9 -2
+      vertex -1 6 -2
+      vertex -1 9 -2
+    endloop
+  endfacet
+  facet normal 0 -1 0
+    outer loop
+      vertex -1 9 -2
+      vertex 0 12 -2
+      vertex 1 9 -2
+    endloop
+  endfacet
+  facet normal 0 -1 -0
+    outer loop
+      vertex 1 9 -2
+      vertex 0 12 -2
+      vertex 2 9 -2
+    endloop
+  endfacet
+  facet normal 0 -1 0
+    outer loop
+      vertex 0 12 -2
+      vertex -1 9 -2
+      vertex -2 9 -2
+    endloop
+  endfacet
+endsolid "vertical_solid_arrow__translated"

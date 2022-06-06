@@ -1,0 +1,29 @@
+{
+    "build_volume": [50, 50, 50],
+    "spacing": 1,
+    "items": [
+        {
+            "filename": "./tests/sc-44515_test/cube.stl",
+            "count": 10,
+            "scale": 1.0
+        },
+        {
+            "filename": "./tests/sc-44515_test/shocks.stl",
+            "count": 1,
+            "scale": 0.5
+        },
+        {
+            "filename": "./tests/sc-44515_test/arrow-minted_cuboid.stl",
+            "count": 2,
+            "scale": 1.0,
+            "copack": [
+                {
+                    "filename": "./tests/sc-44515_test/vertical_solid_arrow.stl"
+                },
+                {
+                    "filename": "./tests/sc-44515_test/vertical_solid_arrow__translated.stl"
+                }
+            ]
+        }
+    ]
+}
