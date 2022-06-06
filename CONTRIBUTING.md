@@ -1,8 +1,11 @@
 # pack3d - Installation, Codebase, Development and Deployment
 
-The Go Development can be carried out straight into the Nautilus container, same as for the Python development. There are a few ways to compile/run that Go code: 1. set up the Go dev environment in the Nautilus docker container (Ubuntu). 2. Set up macOS.
+The Go Development can be carried out straight into the Nautilus container, same as for the Python development. There are a few ways to compile/run that Go code:
 
-The first option is probably preferable since the deployment of executable code will then need to go through the first step anyway, but someone might find it helpful to develop in macOS.
+   1. set up the Go dev environment in the Nautilus docker container (Ubuntu).
+   2. Set up the Go dev environment in macOS with the `go` folder inside the HOME folder.
+
+The first option is probably preferable since the deployment of compiled/executable Go code will eventually need to go through the first step anyway, but someone might find it helpful to develop in macOS.
 
 ## 1. Go Development Setup (Ubuntu 18.04.6 LTS - using `fish`)
 
